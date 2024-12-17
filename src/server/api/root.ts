@@ -1,4 +1,5 @@
-import { postRouter } from "~/server/api/routers/post";
+import { coreEntityRouter } from "~/server/api/routers/coreEntity";
+import { coreEntityTypeRouter } from "~/server/api/routers/coreEntityType";
 import { createCallerFactory, createTRPCRouter } from "~/server/api/trpc";
 
 /**
@@ -7,7 +8,8 @@ import { createCallerFactory, createTRPCRouter } from "~/server/api/trpc";
  * All routers added in /api/routers should be manually added here.
  */
 export const appRouter = createTRPCRouter({
-  post: postRouter,
+  coreEntity: coreEntityRouter,
+  coreEntityType: coreEntityTypeRouter,
 });
 
 // export type definition of API

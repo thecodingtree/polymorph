@@ -43,15 +43,16 @@ model Session {
 }
 
 model User {
-  id            String       @id @default(auto()) @map("_id") @db.ObjectId
+  id            String                @id @default(auto()) @map("_id") @db.ObjectId
   name          String?
-  email         String?      @unique
+  email         String?               @unique
   emailVerified DateTime?
   image         String?
   accounts      Account[]
   sessions      Session[]
   entities      CoreEntity[]
-  coreEntityTypes CoreEntityType[]
+  blueprints    CoreEntityBlueprint[]
+  attributes    Attribute[]
 }
 
 model VerificationToken {
@@ -63,23 +64,64 @@ model VerificationToken {
 }
 
 model CoreEntity {
-  id               String         @id @default(auto()) @map("_id") @db.ObjectId
-  type             CoreEntityType @relation(fields: [coreEntityTypeId], references: [id])
-  coreEntityTypeId String         @db.ObjectId
-  owner            User?          @relation(fields: [ownerId], references: [id])
-  ownerId          String?        @db.ObjectId
-  //relationshipsFrom Relationship[] @relation("RelationshipFrom")
-  //relationshipsTo   Relationship[] @relation("RelationshipTo")
-  //attributes        Attributes[]
-  createdAt        DateTime       @default(now())
-  updatedAt        DateTime       @updatedAt
+  id          String           @id @default(auto()) @map("_id") @db.ObjectId
+  blueprintId String?          @db.ObjectId
+  owner       User?            @relation(fields: [ownerId], references: [id])
+  ownerId     String?          @db.ObjectId
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+  values      AttributeValue[]
 }
 
-model CoreEntityType {
-  id          String       @id @default(auto()) @map("_id") @db.ObjectId
-  owner       User?        @relation(fields: [ownerId], references: [id])
-  ownerId     String?      @db.ObjectId
-  name        String
-  description String
-  entities    CoreEntity[]
+type AttributeValue {
+  attributeId String?            @db.ObjectId
+  type        AttributeValueType @default(STRING)
+  value       Json?              @default("{}")
+}
+
+model CoreEntityBlueprint {
+  id          String                 @id @default(auto()) @map("_id") @db.ObjectId
+  owner       User?                  @relation(fields: [ownerId], references: [id])
+  ownerId     String?                @db.ObjectId
+  public      Boolean                @default(false)
+  name        String                 @default("Generic Schema")
+  description String?
+  attributes  CoreEntityAttributes[]
+  parent      CoreEntityBlueprint?   @relation("BlueprintsHierarchy", fields: [parentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  parentId    String?                @db.ObjectId
+  children    CoreEntityBlueprint[]  @relation("BlueprintsHierarchy")
+  createdAt   DateTime               @default(now())
+  updatedAt   DateTime               @updatedAt
+}
+
+enum AttributeValueType {
+  STRING
+  NUMBER
+  BOOLEAN
+  DATE
+  TIME
+  DATETIME
+  OBJECT
+}
+
+model Attribute {
+  id               String                 @id @default(auto()) @map("_id") @db.ObjectId
+  name             String                 @default("Generic String")
+  description      String?
+  valueType        AttributeValueType     @default(STRING)
+  public           Boolean                @default(false)
+  owner            User?                  @relation(fields: [ownerId], references: [id])
+  ownerId          String?                @db.ObjectId
+  createdAt        DateTime               @default(now())
+  updatedAt        DateTime               @updatedAt
+  linkedAttributes CoreEntityAttributes[]
+}
+
+model CoreEntityAttributes {
+  id           String               @id @default(auto()) @map("_id") @db.ObjectId
+  blueprint    CoreEntityBlueprint? @relation(fields: [coreEntityId], references: [id])
+  attribute    Attribute?           @relation(fields: [attributeId], references: [id])
+  required     Boolean              @default(false)
+  coreEntityId String?              @db.ObjectId
+  attributeId  String?              @db.ObjectId
 }

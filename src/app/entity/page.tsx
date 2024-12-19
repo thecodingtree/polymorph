@@ -1,15 +1,20 @@
 import { api, HydrateClient } from "~/trpc/server";
 
+import { auth } from "~/server/auth";
+
 import { Card } from "~/app/_components/ui/card";
 
 import CoreEntityForm from "../_components/forms/CoreEntityForm";
+import EntityItem from "../_components/entity/EntityItem";
 
 export default async function Entity() {
-  const entities = await api.coreEntity.list();
+  const session = await auth();
 
-  const entityTypes = await api.coreEntityType.list();
+  const entities = await api.coreEntity.list({});
 
-  console.log({ entities, entityTypes });
+  const entityBlueprints = await api.coreEntityBlueprint.list({});
+
+  console.log({ entities, entityBlueprints });
 
   return (
     <div className="flex flex-row justify-center">
@@ -19,9 +24,7 @@ export default async function Entity() {
           <ul>
             {entities.map((entity) => (
               <li className="border-1" key={entity.id}>
-                <Card className="p-1">
-                  <div>{entity?.id}</div>
-                </Card>
+                <EntityItem entity={entity} />
               </li>
             ))}
           </ul>
@@ -29,11 +32,25 @@ export default async function Entity() {
 
         <div className="flex-1 flex-col">
           <CoreEntityForm />
-          {entityTypes.map((entityType) => (
-            <Card key={entityType.id} className="p-1">
-              <div>{entityType.id}</div>
-              <div>{entityType.name}</div>
-              <div>{entityType.description}</div>
+          {entityBlueprints.map((blueprint) => (
+            <Card key={blueprint.id} className="p-1">
+              <div>{blueprint.id}</div>
+              <div>{blueprint.name}</div>
+              <div>{blueprint.description}</div>
+              <ul className="ml-4 list-disc space-y-1">
+                {blueprint?.parent?.attributes?.map((ceAttr) => (
+                  <li key={ceAttr.id} className="text-gray-500">
+                    {ceAttr.attribute?.name} ({ceAttr.attribute?.valueType}){" "}
+                    {ceAttr.required ? "required" : "optional"}
+                  </li>
+                ))}
+                {blueprint?.attributes?.map((ceAttr) => (
+                  <li key={ceAttr.id} className="text-black">
+                    {ceAttr.attribute?.name} ({ceAttr.attribute?.valueType}){" "}
+                    {ceAttr.required ? "required" : "optional"}
+                  </li>
+                ))}
+              </ul>
             </Card>
           ))}
         </div>

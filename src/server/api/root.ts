@@ -1,5 +1,5 @@
 import { coreEntityRouter } from "~/server/api/routers/coreEntity";
-import { coreEntityTypeRouter } from "~/server/api/routers/coreEntityType";
+import { coreEntityBlueprintRouter } from "~/server/api/routers/coreEntityBlueprint";
 import { createCallerFactory, createTRPCRouter } from "~/server/api/trpc";
 
 /**
@@ -9,7 +9,7 @@ import { createCallerFactory, createTRPCRouter } from "~/server/api/trpc";
  */
 export const appRouter = createTRPCRouter({
   coreEntity: coreEntityRouter,
-  coreEntityType: coreEntityTypeRouter,
+  coreEntityBlueprint: coreEntityBlueprintRouter,
 });
 
 // export type definition of API

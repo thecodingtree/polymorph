@@ -1,23 +1,18 @@
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
+import type { PrismaClient } from "@prisma/client";
+
+import {
+  CoreEntityBlueprintCreateSchema,
+  CoreEntityBlueprintFilterSchema,
+} from "~/schemas";
+import type { Maybe, CoreEntityBlueprint } from "~/types";
 
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
 
-const CoreEntityBlueprintCreate = z.object({
-  name: z.string(),
-  description: z.string().optional(),
-  public: z.boolean(),
-  parent: z.string().optional(),
-  attributes: z.array(z.string()),
-});
-
-const CoreEntityBlueprintFilter = z.object({
-  id: z.array(z.string()).optional(),
-  search: z.string().optional(),
-  parent: z.string().optional(),
-});
-
-const buildFilters = (input: z.infer<typeof CoreEntityBlueprintFilter>) => {
+const buildFilters = (
+  input: z.infer<typeof CoreEntityBlueprintFilterSchema>,
+) => {
   const filters = [];
 
   if (input.id) {
@@ -36,9 +31,47 @@ const buildFilters = (input: z.infer<typeof CoreEntityBlueprintFilter>) => {
   return filters;
 };
 
+const listBlueprints = async ({
+  prisma,
+  input,
+  user,
+}: {
+  prisma: PrismaClient;
+  input: z.infer<typeof CoreEntityBlueprintFilterSchema>;
+  user: string;
+}): Promise<CoreEntityBlueprint[]> => {
+  return await prisma.coreEntityBlueprint.findMany({
+    where: {
+      OR: [{ ownerId: user }, { public: true }],
+      AND: buildFilters(input),
+    },
+    include: {
+      attributes: { include: { attribute: true } },
+      children: { select: { id: true, name: true, description: true } },
+    },
+  });
+};
+
+const getBlueprint = async (
+  id: string,
+  user: string,
+  prisma: PrismaClient,
+): Promise<Maybe<CoreEntityBlueprint>> => {
+  return prisma.coreEntityBlueprint.findUnique({
+    where: {
+      id,
+      OR: [{ ownerId: user }, { public: true }],
+    },
+    include: {
+      attributes: { include: { attribute: true } },
+      children: { select: { id: true, name: true, description: true } },
+    },
+  });
+};
+
 export const coreEntityBlueprintRouter = createTRPCRouter({
   create: protectedProcedure
-    .input(CoreEntityBlueprintCreate)
+    .input(CoreEntityBlueprintCreateSchema)
     .mutation(async ({ ctx, input }) => {
       return ctx.db.coreEntityBlueprint.create({
         data: {
@@ -56,29 +89,19 @@ export const coreEntityBlueprintRouter = createTRPCRouter({
       });
     }),
   list: protectedProcedure
-    .input(CoreEntityBlueprintFilter)
+    .input(CoreEntityBlueprintFilterSchema)
     .query(async ({ ctx, input }) => {
-      return ctx.db.coreEntityBlueprint.findMany({
-        where: {
-          OR: [{ ownerId: ctx.session.user.id }, { public: true }],
-          AND: buildFilters(input),
-        },
-        include: {
-          attributes: { include: { attribute: true } },
-          parent: { include: { attributes: { include: { attribute: true } } } },
-          children: { select: { id: true, name: true, description: true } },
-        },
+      return listBlueprints({
+        prisma: ctx.db,
+        input,
+        user: ctx.session.user.id,
       });
     }),
   get: protectedProcedure
     .input(z.object({ id: z.string() }))
     .query(async ({ ctx, input }) => {
-      const entity = await ctx.db.coreEntityBlueprint.findUnique({
-        where: {
-          id: input.id,
-          OR: [{ ownerId: ctx.session.user.id }, { public: true }],
-        },
-      });
+      const entity = await getBlueprint(ctx.session.user.id, input.id, ctx.db);
+
       if (!entity) {
         throw new TRPCError({
           code: "NOT_FOUND",

@@ -1,15 +1,12 @@
 import { api, HydrateClient } from "~/trpc/server";
 
-import { auth } from "~/server/auth";
-
 import { Card } from "~/app/_components/ui/card";
 
 import CoreEntityForm from "../_components/forms/CoreEntityForm";
 import EntityItem from "../_components/entity/EntityItem";
+import EntityCreate from "../_components/entity/EntityCreate";
 
 export default async function Entity() {
-  const session = await auth();
-
   const entities = await api.coreEntity.list({});
 
   const entityBlueprints = await api.coreEntityBlueprint.list({});
@@ -28,6 +25,7 @@ export default async function Entity() {
               </li>
             ))}
           </ul>
+          <EntityCreate blueprints={entityBlueprints} />
         </div>
 
         <div className="flex-1 flex-col">
@@ -38,16 +36,24 @@ export default async function Entity() {
               <div>{blueprint.name}</div>
               <div>{blueprint.description}</div>
               <ul className="ml-4 list-disc space-y-1">
-                {blueprint?.parent?.attributes?.map((ceAttr) => (
+                {/* {blueprint?.parent?.attributes?.map((ceAttr) => (
                   <li key={ceAttr.id} className="text-gray-500">
-                    {ceAttr.attribute?.name} ({ceAttr.attribute?.valueType}){" "}
-                    {ceAttr.required ? "required" : "optional"}
+                    <div className="flex flex-col">
+                      <div>{ceAttr.id}</div>
+                      <div>{ceAttr.attribute?.name}</div>{" "}
+                      <div>{ceAttr.attribute?.valueType}</div>
+                      <div>{ceAttr.required ? "required" : "optional"}</div>
+                    </div>
                   </li>
-                ))}
+                ))} */}
                 {blueprint?.attributes?.map((ceAttr) => (
-                  <li key={ceAttr.id} className="text-black">
-                    {ceAttr.attribute?.name} ({ceAttr.attribute?.valueType}){" "}
-                    {ceAttr.required ? "required" : "optional"}
+                  <li key={ceAttr.attribute?.id} className="text-black">
+                    <div className="flex flex-col">
+                      <div>{ceAttr.attribute?.id}</div>
+                      <div>{ceAttr.attribute?.name}</div>{" "}
+                      <div>{ceAttr.attribute?.valueType}</div>
+                      <div>{ceAttr.required ? "required" : "optional"}</div>
+                    </div>
                   </li>
                 ))}
               </ul>

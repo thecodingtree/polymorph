@@ -1,44 +1,60 @@
-import { AttributeValueType } from "@prisma/client";
+import type { PrismaClient } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 
+import { CoreEntityCreateSchema, CoreEntityFilterSchema } from "~/schemas";
+import type { CoreEntity, CoreEntityFilter, Maybe } from "~/types";
+
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
 
-export const CoreEntityCreate = z.object({
-  blueprintId: z.string(),
-  values: z
-    .array(
-      z.object({
-        attributeId: z.string(),
-        type: z.nativeEnum(AttributeValueType),
-        value: z.string().optional(),
-      }),
-    )
-    .min(1),
-});
+const getEntities = async ({
+  prisma,
+  input,
+  user,
+}: {
+  prisma: PrismaClient;
+  input: CoreEntityFilter;
+  user: string;
+}): Promise<CoreEntity[]> => {
+  const { id, blueprint } = input;
 
-export const CoreEntityFilter = z.object({
-  id: z.string().optional(),
-  blueprint: z.string().optional(),
-});
+  return prisma.coreEntity.findMany({
+    where: {
+      ownerId: user,
+      AND: [{ id }, { blueprintId: blueprint }],
+    },
+  });
+};
+
+const getEntity = async ({
+  prisma,
+  input,
+  user,
+}: {
+  prisma: PrismaClient;
+  input: CoreEntityFilter;
+  user: string;
+}): Promise<Maybe<CoreEntity>> => {
+  return prisma.coreEntity.findUnique({
+    where: { id: input.id, ownerId: user },
+  });
+};
 
 export const coreEntityRouter = createTRPCRouter({
   list: protectedProcedure
-    .input(CoreEntityFilter)
+    .input(CoreEntityFilterSchema)
     .query(async ({ ctx, input }) => {
-      return ctx.db.coreEntity.findMany({
-        where: {
-          ownerId: ctx.session.user.id,
-          AND: [{ id: input.id }, { blueprintId: input.blueprint }],
-        },
-      });
+      return getEntities({ prisma: ctx.db, input, user: ctx.session.user.id });
     }),
   get: protectedProcedure
     .input(z.object({ id: z.string() }))
     .query(async ({ ctx, input }) => {
-      const entity = await ctx.db.coreEntity.findUnique({
-        where: { id: input.id, ownerId: ctx.session.user.id },
+      const entity = await getEntity({
+        prisma: ctx.db,
+        input,
+        user: ctx.session.user.id,
       });
+
       if (!entity) {
         throw new TRPCError({
           code: "NOT_FOUND",
@@ -48,7 +64,7 @@ export const coreEntityRouter = createTRPCRouter({
       return entity;
     }),
   create: protectedProcedure
-    .input(CoreEntityCreate)
+    .input(CoreEntityCreateSchema)
     .mutation(async ({ ctx, input }) => {
       return ctx.db.coreEntity.create({
         data: {

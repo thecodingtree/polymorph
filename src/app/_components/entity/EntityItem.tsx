@@ -3,7 +3,7 @@
 import React from "react";
 
 import { api } from "~/trpc/react";
-import type { CoreEntityResponse } from "~/server/api/routers/coreEntity";
+import type { CoreEntity } from "~/types";
 import { Card, CardTitle, CardContent } from "~/app/_components/ui/card";
 
 import { Button } from "~/app/_components/ui/button";
@@ -11,7 +11,7 @@ import { Button } from "~/app/_components/ui/button";
 export default function EntityItem({
   entity,
 }: {
-  entity: CoreEntityResponse;
+  entity: CoreEntity;
   onDelete?: () => void;
 }) {
   const deleteEntity = api.coreEntity.delete.useMutation();
@@ -26,8 +26,15 @@ export default function EntityItem({
       </CardTitle>
       <CardContent>
         <div>{entity?.id}</div>
-        <div>{entity?.type?.name}</div>
-        <div>{entity?.type?.description}</div>
+        <div>
+          <ul>
+            {entity?.values?.map((val) => (
+              <li key={val.attributeId}>
+                {val.type} {JSON.stringify(val.value)}
+              </li>
+            ))}
+          </ul>
+        </div>
       </CardContent>
     </Card>
   );

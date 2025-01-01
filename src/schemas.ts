@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+import { TaskType, TaskPriority } from "./types";
+
 import { AttributeValueType } from "@prisma/client";
 
 const literalSchema = z.union([z.string(), z.number(), z.boolean(), z.null()]);
@@ -37,4 +39,23 @@ export const CoreEntityBlueprintFilterSchema = z.object({
   id: z.array(z.string()).optional(),
   search: z.string().optional(),
   parent: z.string().optional(),
+});
+
+export const TasksFilterSchema = z.object({
+  type: z.nativeEnum(TaskType).optional(),
+  completed: z.boolean().optional(),
+  startDate: z.date().optional(),
+  endDate: z.date().optional(),
+  entity: z.array(z.string()).optional(),
+});
+
+export const TaskCreateSchema = z.object({
+  type: z.nativeEnum(TaskType),
+  description: z.string(),
+  content: z.string().optional(),
+  priority: z.nativeEnum(TaskPriority).optional(),
+  isPrivate: z.boolean().optional(),
+  completed: z.boolean().optional(),
+  startDate: z.date().optional(),
+  endDate: z.date().optional(),
 });

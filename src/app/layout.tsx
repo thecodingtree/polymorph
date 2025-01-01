@@ -3,8 +3,11 @@ import "~/styles/globals.css";
 import { GeistSans } from "geist/font/sans";
 import { type Metadata } from "next";
 
+import { auth } from "~/server/auth";
 import { TRPCReactProvider } from "~/trpc/react";
 import { Toaster } from "~/app/_components/ui/toaster";
+
+import MainLayout from "~/app/_components/layouts/MainLayout";
 
 import { cn } from "~/lib/utils";
 
@@ -14,9 +17,11 @@ export const metadata: Metadata = {
   icons: [{ rel: "icon", url: "/favicon.ico" }],
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
+  const session = await auth();
+
   return (
     <html lang="en">
       <head>
@@ -28,11 +33,13 @@ export default function RootLayout({
       </head>
       <body
         className={cn(
-          "bg-background min-h-screen font-sans antialiased",
+          "min-h-screen bg-background font-sans antialiased",
           GeistSans.variable,
         )}
       >
-        <TRPCReactProvider>{children}</TRPCReactProvider>
+        <TRPCReactProvider>
+          {session?.user ? <MainLayout>{children}</MainLayout> : children}
+        </TRPCReactProvider>
         {/* <Analytics /> */}
         <Toaster />
       </body>

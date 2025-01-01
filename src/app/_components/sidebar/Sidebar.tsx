@@ -4,9 +4,12 @@ import { cn } from "~/lib/utils";
 
 import { AccountMenuItem } from "~/app/_components/account/AccountMenuItem";
 
-import { IconHome } from "@tabler/icons-react";
+import { IconHome, IconListCheck } from "@tabler/icons-react";
 
-const sidebarData = [{ link: "/", label: "Home", icon: IconHome }];
+const sidebarData = [
+  { link: "/", label: "Home", icon: IconHome },
+  { link: "/tasks", label: "Tasks", icon: IconListCheck },
+];
 
 // const getActiveFromPath = (path: string) => {
 //   return sidebarData.find((item) => path.includes(item.link))?.label;

@@ -3,9 +3,9 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 
-import { z } from "zod";
+import type { z } from "zod";
 
-import { TaskInput } from "~/schemas";
+import { TaskCreateSchema } from "~/schemas";
 
 import { Button } from "~/app/_components/ui/button";
 import { Switch } from "~/app/_components/ui/switch";
@@ -42,12 +42,12 @@ export default function AddTaskForm({
   submitting,
 }: {
   submitLabel?: string;
-  onSubmit: (values: z.infer<typeof TaskInput>) => void;
+  onSubmit: (values: z.infer<typeof TaskCreateSchema>) => void;
   dateType?: "dueDate" | "startDate";
   submitting?: boolean;
 }) {
-  const form = useForm<z.infer<typeof TaskInput>>({
-    resolver: zodResolver(TaskInput),
+  const form = useForm<z.infer<typeof TaskCreateSchema>>({
+    resolver: zodResolver(TaskCreateSchema),
     defaultValues: {
       description: "",
       content: "",

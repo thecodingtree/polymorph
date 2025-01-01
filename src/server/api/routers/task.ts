@@ -4,7 +4,7 @@ import { z } from "zod";
 
 import { protectedProcedure, createTRPCRouter } from "~/server/api/trpc";
 
-import { TasksFilterSchema } from "~/schemas";
+import { TaskCreateSchema, TasksFilterSchema } from "~/schemas";
 import type { TaskFilter, Task } from "~/types";
 
 const getTasks = async ({
@@ -62,24 +62,24 @@ export const taskRouter = createTRPCRouter({
         user: ctx.session?.user.id,
       });
     }),
-  // create: protectedProcedure
-  //   .input(taskInput)
-  //   .mutation(async ({ ctx, input }) => {
-  //     return ctx.prisma.task.create({
-  //       data: {
-  //         creatorId: ctx.session?.user.id!,
-  //         type: input.type,
-  //         description: input.description,
-  //         content: input.content,
-  //         entityId: input.entity,
-  //         priority: input.priority,
-  //         private: input.isPrivate,
-  //         completed: input.completed,
-  //         startDate: input.startDate,
-  //         endDate: input.endDate,
-  //       },
-  //     });
-  //   }),
+  create: protectedProcedure
+    .input(TaskCreateSchema)
+    .mutation(async ({ ctx, input }) => {
+      return ctx.db.task.create({
+        data: {
+          ownerId: ctx.session?.user.id,
+          //type: input.type,
+          description: input?.description,
+          content: input?.content,
+          //entityId: input.entity,
+          priority: input?.priority,
+          private: input?.isPrivate,
+          completed: input?.completed,
+          startDate: input?.startDate,
+          endDate: input?.endDate,
+        },
+      });
+    }),
   // completeTasks: protectedProcedure
   //   .input(z.object({ taskIds: z.array(z.string()) }))
   //   .mutation(async ({ ctx, input }) => {

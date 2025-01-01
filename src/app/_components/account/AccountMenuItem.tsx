@@ -1,7 +1,5 @@
 import Link from "next/link";
 
-import { signOut } from "~/server/auth";
-
 import { IconLogout, IconUserEdit } from "@tabler/icons-react";
 
 import {

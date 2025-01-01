@@ -2,7 +2,7 @@ import { type TaskFilter } from "~/types";
 
 import FilterSelect from "~/app/_components/controls/FilterSelect";
 
-import type { TaskType } from "~/types";
+import { TaskType } from "~/types";
 
 import { getTaskIcon } from "~/app/_components/tasks/utils";
 
@@ -30,7 +30,7 @@ export default function TaskFilters({
           onChange={(typeFilter) => {
             handleFilterChange({
               ...filters,
-              type: typeFilter,
+              type: typeFilter as TaskType,
             });
           }}
           allowMultiple

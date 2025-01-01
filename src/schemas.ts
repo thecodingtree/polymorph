@@ -50,11 +50,12 @@ export const TasksFilterSchema = z.object({
 });
 
 export const TaskCreateSchema = z.object({
+  type: z.nativeEnum(TaskType),
   description: z.string(),
   content: z.string().optional(),
   priority: z.nativeEnum(TaskPriority).optional(),
   isPrivate: z.boolean().optional(),
   completed: z.boolean().optional(),
   startDate: z.date().optional(),
-  endDate: z.date(),
+  endDate: z.date().optional(),
 });

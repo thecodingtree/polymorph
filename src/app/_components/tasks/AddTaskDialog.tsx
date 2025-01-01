@@ -1,5 +1,7 @@
 import { useState } from "react";
 
+import type { z } from "zod";
+
 import { api } from "~/trpc/react";
 
 import {
@@ -10,8 +12,8 @@ import {
 
 import AddTaskForm from "~/app/_components/tasks/AddTaskForm";
 import FilterSelect from "~/app/_components/controls/FilterSelect";
-import { type Task } from "~/types";
-import { TaskType } from "~/types";
+import { TaskType, type Task } from "~/types";
+import type { TaskCreateSchema } from "~/schemas";
 
 import { getTaskIcon } from "./utils";
 
@@ -26,9 +28,9 @@ export default function AddTaskDialog({
   const [submitting, setSubmitting] = useState(false);
   const [taskType, setType] = useState<TaskType>(TaskType.TODO);
 
-  //const createTask = trpc.task.createTask.useMutation();
+  const createTask = api.task.create.useMutation();
 
-  const handleSubmit = (values: Task) => {
+  const handleSubmit = (values: z.infer<typeof TaskCreateSchema>) => {
     createTask.mutate(values, {
       onSuccess: (data) => {
         setOpened(false);
@@ -46,7 +48,7 @@ export default function AddTaskDialog({
           <FilterSelect
             allowNone={false}
             allowMultiple={false}
-            selected={type}
+            selected={taskType}
             onChange={(type) => setType(type as TaskType)}
             items={Object.values(TaskType).map((type) => ({
               key: type,
@@ -55,8 +57,8 @@ export default function AddTaskDialog({
           />
           <AddTaskForm
             submitting={submitting}
-            onSubmit={(values) => handleSubmit({ ...values, type: type! })}
-            dateType={type === TaskType.EVENT ? "startDate" : "dueDate"}
+            onSubmit={(values) => handleSubmit({ ...values, type: taskType })}
+            dateType={taskType === TaskType.EVENT ? "startDate" : "dueDate"}
           />
         </DialogContent>
       </Dialog>

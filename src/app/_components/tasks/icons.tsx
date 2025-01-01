@@ -5,16 +5,19 @@ import {
   IconMail,
   IconUserCheck,
   IconNotes,
-} from '@tabler/icons-react';
+  type IconProps,
+} from "@tabler/icons-react";
 
-export const TaskIconCall = (props: any) => <IconPhone {...props} />;
+export const TaskIconCall = (props: IconProps) => <IconPhone {...props} />;
 
-export const TaskIconEvent = (props: any) => <IconCalendar {...props} />;
+export const TaskIconEvent = (props: IconProps) => <IconCalendar {...props} />;
 
-export const TaskIconTodo = (props: any) => <IconListCheck {...props} />;
+export const TaskIconTodo = (props: IconProps) => <IconListCheck {...props} />;
 
-export const TaskIconEmail = (props: any) => <IconMail {...props} />;
+export const TaskIconEmail = (props: IconProps) => <IconMail {...props} />;
 
-export const TaskIconFolllowUp = (props: any) => <IconUserCheck {...props} />;
+export const TaskIconFolllowUp = (props: IconProps) => (
+  <IconUserCheck {...props} />
+);
 
-export const TaskIconOther = (props: any) => <IconNotes {...props} />;
+export const TaskIconOther = (props: IconProps) => <IconNotes {...props} />;

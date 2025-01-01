@@ -1,11 +1,4 @@
-import {
-  TaskIconEvent,
-  TaskIconCall,
-  TaskIconTodo,
-  TaskIconEmail,
-  TaskIconFolllowUp,
-  TaskIconOther,
-} from "./icons";
+import { TaskIconTodo } from "./icons";
 
 import { Badge } from "~/app/_components/ui/badge";
 
@@ -14,7 +7,7 @@ import { cn } from "~/lib/utils";
 
 export const getTaskIcon = (
   type: Maybe<TaskType>,
-  className: Maybe<string>,
+  className?: Maybe<string>,
 ) => {
   const classes = cn("w-4 h-4", className);
 

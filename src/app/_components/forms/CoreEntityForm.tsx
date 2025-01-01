@@ -8,17 +8,17 @@ import { Button } from "~/app/_components/ui/button";
 export default function CoreEntityForm() {
   return (
     <form
-      action={async (data) => {
+      action={async () => {
         "use server";
 
-        const typeId: string = data.get("typeId")?.toString() ?? "";
         await api.coreEntity.create({
-          typeId,
+          blueprintId: "",
+          values: [],
         });
       }}
       className="space-y-8"
     >
-      <Input name="typeId" placeholder="typeId" />
+      <Input name="blueprintId" placeholder="blueprintId" />
       <Button type="submit">Submit</Button>
     </form>
   );

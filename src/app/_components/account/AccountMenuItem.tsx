@@ -28,7 +28,10 @@ export function AccountMenuItem() {
             </Link>
           </div>
           <div className="p-2">
-            <Link href="#" className="flex w-full flex-row items-center gap-2">
+            <Link
+              href="/api/auth/signout"
+              className="flex w-full flex-row items-center gap-2"
+            >
               <IconLogout size={24} />
               <div className="">Logout</div>
             </Link>

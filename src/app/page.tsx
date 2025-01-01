@@ -2,7 +2,7 @@ import Link from "next/link";
 
 import { auth } from "~/server/auth";
 
-export default async function Home() {
+export default async function Main() {
   //const hello = await api.post.hello({ text: "from tRPC" });
   const session = await auth();
 

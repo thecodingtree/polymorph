@@ -5,12 +5,6 @@ generator client {
   provider = "prisma-client-js"
 }
 
-generator zod {
-  provider                 = "zod-prisma"
-    output        = "./zod"
-  relationModel = "default"
-}
-
 datasource db {
   provider = "mongodb"
   // NOTE: When using mysql or sqlserver, uncomment the @db.Text annotations in model Account below
@@ -59,6 +53,7 @@ model User {
   entities      CoreEntity[]
   blueprints    CoreEntityBlueprint[]
   attributes    Attribute[]
+  tasks         Task[]
 }
 
 model VerificationToken {
@@ -77,6 +72,7 @@ model CoreEntity {
   createdAt   DateTime         @default(now())
   updatedAt   DateTime         @updatedAt
   values      AttributeValue[]
+  tasks       Task[]
 }
 
 type AttributeValue {
@@ -130,4 +126,34 @@ model CoreEntityAttributes {
   required     Boolean              @default(false)
   coreEntityId String?              @db.ObjectId
   attributeId  String?              @db.ObjectId
+}
+
+enum TaskPriority {
+  LOW
+  MEDIUM
+  HIGH
+}
+
+enum TaskType {
+  TODO
+  EVENT
+  REMINDER
+}
+
+model Task {
+  id          String       @id @default(auto()) @map("_id") @db.ObjectId
+  type        TaskType     @default(TODO)
+  owner       User?        @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  ownerId     String?      @db.ObjectId
+  entity      CoreEntity?  @relation(fields: [entityId], references: [id], onDelete: SetNull)
+  entityId    String?      @db.ObjectId
+  description String
+  content     String?
+  startDate   DateTime?
+  endDate     DateTime     @default(now())
+  priority    TaskPriority @default(LOW)
+  completed   Boolean      @default(false)
+  private     Boolean      @default(false)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
 }

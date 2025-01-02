@@ -29,26 +29,30 @@ import {
 } from "~/app/_components/ui/form";
 
 import { Input } from "~/app/_components/ui/input";
-import { TaskPriority } from "~/types";
+import { TaskPriority, TaskType } from "~/types";
 import { Textarea } from "~/app/_components/ui/textarea";
 import DateTimePicker from "~/app/_components/controls/DateTime/DateTimePicker";
 
 import { getDateRounded } from "~/app/_components/controls/DateTime/utils";
 
 export default function AddTaskForm({
+  taskType,
   submitLabel,
   onSubmit,
-  dateType = "dueDate",
   submitting,
 }: {
+  taskType: TaskType;
   submitLabel?: string;
   onSubmit: (values: z.infer<typeof TaskCreateSchema>) => void;
   dateType?: "dueDate" | "startDate";
   submitting?: boolean;
 }) {
+  const dateType = taskType === TaskType.EVENT ? "startDate" : "dueDate";
+
   const form = useForm<z.infer<typeof TaskCreateSchema>>({
     resolver: zodResolver(TaskCreateSchema),
     defaultValues: {
+      type: taskType,
       description: "",
       content: "",
       priority: TaskPriority.LOW,
@@ -181,7 +185,10 @@ export default function AddTaskForm({
             )}
           />
           <div className="mt-2 flex flex-col justify-center">
-            <Button type="submit" disabled={submitting}>
+            <Button
+              type="submit"
+              disabled={submitting ?? !form.formState.isValid}
+            >
               {submitLabel ?? "Add Task"}
             </Button>
           </div>

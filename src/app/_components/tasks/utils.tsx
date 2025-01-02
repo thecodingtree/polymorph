@@ -1,4 +1,4 @@
-import { TaskIconTodo } from "./icons";
+import { TaskIconTodo, TaskIconEvent, TaskIconReminder } from "./icons";
 
 import { Badge } from "~/app/_components/ui/badge";
 
@@ -13,26 +13,16 @@ export const getTaskIcon = (
 
   if (!type) return null;
 
-  if (type === TaskType.TODO) {
-    return <TaskIconTodo className={classes} />;
+  switch (type) {
+    case TaskType.EVENT:
+      return <TaskIconEvent className={classes} />;
+    case TaskType.TODO:
+      return <TaskIconTodo className={classes} />;
+    case TaskType.REMINDER:
+      return <TaskIconReminder className={classes} />;
+    default:
+      return null;
   }
-
-  // switch (type) {
-  //   // case TaskType.CALL:
-  //   //   return <TaskIconCall className={classes} />;
-  //   // case TaskType.EMAIL:
-  //   //   return <TaskIconEmail className={classes} />;
-  //   // case TaskType.EVENT:
-  //   //   return <TaskIconEvent className={classes} />;
-  //   // case TaskType.FOLLOW_UP:
-  //   //   return <TaskIconFolllowUp className={classes} />;
-  //   case type === TaskType.TODO:
-  //     return <TaskIconTodo className={classes} />;
-  //   // case TaskType.OTHER:
-  //   //   return <TaskIconOther className={classes} />;
-  //   default:
-  //     return null;
-  // }
 };
 
 export const getTaskDateLabel = (

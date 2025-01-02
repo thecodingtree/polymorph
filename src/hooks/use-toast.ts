@@ -54,7 +54,7 @@ type Action =
     };
 
 interface State {
-  toasts: ToasterToast[];
+  s: ToasterToast[];
 }
 
 const toastTimeouts = new Map<string, ReturnType<typeof setTimeout>>();

@@ -24,9 +24,7 @@ export default function TasksList({
               selected={selectedTasks?.some(
                 (selectedTask) => selectedTask === task.id,
               )}
-              onSelectChange={(selected) =>
-                onSelectChange && onSelectChange(selected, task.id)
-              }
+              onSelectChange={(selected) => onSelectChange?.(selected, task.id)}
             />
           </div>
         ))

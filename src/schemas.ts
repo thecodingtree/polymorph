@@ -42,7 +42,7 @@ export const CoreEntityBlueprintFilterSchema = z.object({
 });
 
 export const TasksFilterSchema = z.object({
-  type: z.nativeEnum(TaskType).optional(),
+  type: z.array(z.nativeEnum(TaskType)).optional(),
   completed: z.boolean().optional(),
   startDate: z.date().optional(),
   endDate: z.date().optional(),
@@ -51,8 +51,21 @@ export const TasksFilterSchema = z.object({
 
 export const TaskCreateSchema = z.object({
   type: z.nativeEnum(TaskType),
-  description: z.string(),
+  description: z.string().min(1),
   content: z.string().optional(),
+  entity: z.string().optional(),
+  priority: z.nativeEnum(TaskPriority).optional(),
+  isPrivate: z.boolean().optional(),
+  completed: z.boolean().optional(),
+  startDate: z.date().optional(),
+  endDate: z.date().optional(),
+});
+
+export const TaskUpdateSchema = z.object({
+  type: z.nativeEnum(TaskType).optional(),
+  description: z.string().optional(),
+  content: z.string().optional(),
+  entity: z.string().optional(),
   priority: z.nativeEnum(TaskPriority).optional(),
   isPrivate: z.boolean().optional(),
   completed: z.boolean().optional(),

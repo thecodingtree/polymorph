@@ -8,6 +8,7 @@ import {
   Dialog,
   DialogContent,
   DialogTrigger,
+  DialogTitle,
 } from "~/app/_components/ui/dialog";
 
 import AddTaskForm from "~/app/_components/tasks/AddTaskForm";
@@ -16,6 +17,7 @@ import { TaskType, type Task } from "~/types";
 import type { TaskCreateSchema } from "~/schemas";
 
 import { getTaskIcon } from "./utils";
+import { set } from "date-fns";
 
 export default function AddTaskDialog({
   children,
@@ -31,6 +33,7 @@ export default function AddTaskDialog({
   const createTask = api.task.create.useMutation();
 
   const handleSubmit = (values: z.infer<typeof TaskCreateSchema>) => {
+    setSubmitting(true);
     createTask.mutate(values, {
       onSuccess: (data) => {
         setOpened(false);
@@ -41,27 +44,26 @@ export default function AddTaskDialog({
   };
 
   return (
-    <div>
-      <Dialog open={opened} onOpenChange={setOpened}>
-        <DialogTrigger asChild>{children}</DialogTrigger>
-        <DialogContent>
-          <FilterSelect
-            allowNone={false}
-            allowMultiple={false}
-            selected={taskType}
-            onChange={(type) => setType(type as TaskType)}
-            items={Object.values(TaskType).map((type) => ({
-              key: type,
-              icon: getTaskIcon(type),
-            }))}
-          />
-          <AddTaskForm
-            submitting={submitting}
-            onSubmit={(values) => handleSubmit({ ...values, type: taskType })}
-            dateType={taskType === TaskType.EVENT ? "startDate" : "dueDate"}
-          />
-        </DialogContent>
-      </Dialog>
-    </div>
+    <Dialog open={opened} onOpenChange={setOpened}>
+      <DialogTrigger asChild>{children}</DialogTrigger>
+      <DialogContent>
+        <DialogTitle>Add Task</DialogTitle>
+        <FilterSelect
+          allowNone={false}
+          allowMultiple={false}
+          selected={taskType}
+          onChange={(type) => setType(type as TaskType)}
+          items={Object.values(TaskType).map((type) => ({
+            key: type,
+            icon: getTaskIcon(type),
+          }))}
+        />
+        <AddTaskForm
+          taskType={taskType}
+          submitting={submitting}
+          onSubmit={(values) => handleSubmit({ ...values, type: taskType })}
+        />
+      </DialogContent>
+    </Dialog>
   );
 }

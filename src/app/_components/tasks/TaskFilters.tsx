@@ -30,7 +30,7 @@ export default function TaskFilters({
           onChange={(typeFilter) => {
             handleFilterChange({
               ...filters,
-              type: typeFilter as TaskType,
+              type: typeFilter as TaskType[],
             });
           }}
           allowMultiple

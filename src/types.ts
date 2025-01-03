@@ -6,6 +6,7 @@ import type {
   CoreEntityCreateSchema,
   CoreEntityFilterSchema,
   TasksFilterSchema,
+  TaskCollectionFilterSchema,
 } from "./schemas";
 
 export type CoreEntityBlueprintType = Prisma.CoreEntityBlueprintGetPayload<{
@@ -69,5 +70,17 @@ export interface Task {
 }
 
 export type TaskFilter = z.infer<typeof TasksFilterSchema>;
+
+export interface TaskCollection {
+  id: string;
+  name: string;
+  description: Maybe<string>;
+  ownerId: Maybe<string>;
+  tasks: Maybe<Task[]>;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export type TaskCollectionFilter = z.infer<typeof TaskCollectionFilterSchema>;
 
 export { AttributeValueType, TaskPriority, TaskType };

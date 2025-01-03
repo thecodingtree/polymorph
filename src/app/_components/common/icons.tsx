@@ -11,6 +11,7 @@ import {
   IconCalendarClock as IconCalendarClockTabler,
   IconNote as IconNoteTabler,
   IconUserEdit,
+  IconTrash,
   type IconProps,
 } from "@tabler/icons-react";
 
@@ -32,6 +33,7 @@ export const IconExpand = (props: IconProps) => <IconChevronDown {...props} />;
 export const IconCollapse = (props: IconProps) => <IconChevronUp {...props} />;
 
 export const IconAdd = (props: IconProps) => <IconPlus {...props} />;
+export const IconDelete = (props: IconProps) => <IconTrash {...props} />;
 
 export const IconTime = (props: IconProps) => <IconClock {...props} />;
 

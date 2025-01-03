@@ -72,3 +72,20 @@ export const TaskUpdateSchema = z.object({
   startDate: z.date().optional(),
   endDate: z.date().optional(),
 });
+
+export const TaskCollectionFilterSchema = z.object({
+  name: z.string().optional(),
+  tasks: z.array(z.string()).optional(),
+});
+
+export const TaskCollectionCreateSchema = z.object({
+  name: z.string().min(1),
+  description: z.string().optional(),
+  tasks: z.array(z.string()).optional(),
+});
+
+export const TaskCollectionUpdateSchema = z.object({
+  name: z.string().optional(),
+  description: z.string().optional(),
+  tasks: z.array(z.string()).optional(),
+});

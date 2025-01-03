@@ -8,7 +8,7 @@ export default function TasksList({
   selectedTasks,
   onSelectChange,
 }: {
-  tasks: Task[] | undefined;
+  tasks: Maybe<Task[]>;
   selectedTasks: Maybe<string[]>;
   onSelectChange?: (selected: boolean, taskId: string) => void;
 }) {

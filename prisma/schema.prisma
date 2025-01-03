@@ -54,6 +54,7 @@ model User {
   blueprints    CoreEntityBlueprint[]
   attributes    Attribute[]
   tasks         Task[]
+  taskCollections TaskCollection[]
 }
 
 model VerificationToken {
@@ -147,6 +148,8 @@ model Task {
   ownerId     String?      @db.ObjectId
   entity      CoreEntity?  @relation(fields: [entityId], references: [id], onDelete: SetNull)
   entityId    String?      @db.ObjectId
+  collection TaskCollection? @relation(fields: [collectionId], references: [id], onDelete: SetNull)
+  collectionId String?     @db.ObjectId
   description String
   content     String?
   startDate   DateTime?
@@ -156,4 +159,15 @@ model Task {
   private     Boolean      @default(false)
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
+}
+
+model TaskCollection {
+  id          String  @id @default(auto()) @map("_id") @db.ObjectId
+  owner       User?   @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  ownerId     String? @db.ObjectId
+  name        String
+  description String?
+  tasks       Task[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }

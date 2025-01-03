@@ -24,7 +24,7 @@ const getTasks = async ({
 
   const filters = [];
 
-  if (type) {
+  if (type?.length) {
     filters.push({ type: { in: type } });
   }
 
@@ -53,7 +53,7 @@ export const taskRouter = createTRPCRouter({
   get: protectedProcedure
     .input(z.object({ id: z.string() }))
     .query(async ({ ctx, input }) => {
-      return ctx.db.task.findUnique({
+      return await ctx.db.task.findUnique({
         where: { id: input.id, ownerId: ctx.session?.user.id },
       });
     }),

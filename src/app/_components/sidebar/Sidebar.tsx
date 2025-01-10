@@ -4,11 +4,11 @@ import { cn } from "~/lib/utils";
 
 import { AccountMenuItem } from "~/app/_components/account/AccountMenuItem";
 
-import { IconHome, IconListCheck } from "@tabler/icons-react";
+import { House, ListChecks } from "lucide-react";
 
 const sidebarData = [
-  { link: "/", label: "Home", icon: IconHome },
-  { link: "/tasks", label: "Tasks", icon: IconListCheck },
+  { link: "/", label: "Home", icon: House },
+  { link: "/tasks", label: "Tasks", icon: ListChecks },
 ];
 
 // const getActiveFromPath = (path: string) => {
@@ -29,7 +29,7 @@ export default function Sidebar() {
         href={item.link}
         key={item.label}
       >
-        <item.icon size={24} stroke={1.5} />
+        <item.icon size={24} />
         <span>{item.label}</span>
       </Link>
     );

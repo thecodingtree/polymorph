@@ -5,7 +5,7 @@ import { type Metadata } from "next";
 
 import { auth } from "~/server/auth";
 import { TRPCReactProvider } from "~/trpc/react";
-import { Toaster } from "~/app/_components/ui/toaster";
+import { Toaster } from "~/app/_components/ui/sonner";
 
 import MainLayout from "~/app/_components/layouts/MainLayout";
 

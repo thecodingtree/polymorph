@@ -1,5 +1,5 @@
 import { BackButton } from "~/app/_components/controls/NavButtons";
-import Sidebar from "~/app/_components/sidebar/Sidebar";
+//import Sidebar from "~/app/_components/sidebar/Sidebar";
 //import EntitySearch from '@/components/entities/EntitySearch';
 
 export default function MainLayout({
@@ -11,7 +11,7 @@ export default function MainLayout({
         <div className="w-1/2">SEARCH</div>
       </header>
       <div className="flex flex-row">
-        <Sidebar />
+        {/* <Sidebar /> */}
         <main className="container mx-auto min-h-screen p-4">
           <div className="min-h-4" />
           <BackButton />

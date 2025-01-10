@@ -2,9 +2,9 @@
 
 import { IconButton } from "./Buttons";
 
-import { IconArrowNarrowLeft } from "@tabler/icons-react";
+import { ArrowLeft } from "lucide-react";
 
 export function BackButton() {
   //const router = useRouter();
-  return <IconButton icon={<IconArrowNarrowLeft />} />;
+  return <IconButton icon={<ArrowLeft />} />;
 }

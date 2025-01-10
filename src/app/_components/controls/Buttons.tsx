@@ -1,5 +1,5 @@
 import { Button } from "~/app/_components/ui/button";
-import { IconPencil, IconX, IconCheck } from "@tabler/icons-react";
+import { Pencil, Check, X } from "lucide-react";
 
 import { cn } from "~/lib/utils";
 
@@ -33,7 +33,7 @@ export function EditButton({ onClick }: { onClick?: () => void }) {
   return (
     <IconButton
       onClick={onClick}
-      icon={<IconPencil style={{ width: "70%", height: "70%" }} stroke={1.5} />}
+      icon={<Pencil style={{ width: "70%", height: "70%" }} />}
     />
   );
 }
@@ -42,7 +42,7 @@ export function DeleteButton({ onClick }: { onClick?: () => void }) {
   return (
     <IconButton
       onClick={onClick}
-      icon={<IconX style={{ width: "70%", height: "70%" }} stroke={1.5} />}
+      icon={<X style={{ width: "70%", height: "70%" }} />}
     />
   );
 }
@@ -51,7 +51,7 @@ export function ConfirmButton({ onClick }: { onClick?: () => void }) {
   return (
     <IconButton
       onClick={onClick}
-      icon={<IconCheck style={{ width: "70%", height: "70%" }} stroke={1.5} />}
+      icon={<Check style={{ width: "70%", height: "70%" }} />}
     />
   );
 }

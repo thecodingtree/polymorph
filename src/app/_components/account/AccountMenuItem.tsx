@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-import { IconLogout, IconUserEdit } from "@tabler/icons-react";
+import { LogOut, UserRoundPen } from "lucide-react";
 
 import {
   Popover,
@@ -23,7 +23,7 @@ export function AccountMenuItem() {
               href="/profile"
               className="flex w-full flex-row items-center gap-2"
             >
-              <IconUserEdit size={24} />
+              <UserRoundPen size={24} />
               <div className="">Profile</div>
             </Link>
           </div>
@@ -32,7 +32,7 @@ export function AccountMenuItem() {
               href="/api/auth/signout"
               className="flex w-full flex-row items-center gap-2"
             >
-              <IconLogout size={24} />
+              <LogOut size={24} />
               <div className="">Logout</div>
             </Link>
           </div>

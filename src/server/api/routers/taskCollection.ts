@@ -4,17 +4,8 @@ import { z } from "zod";
 
 import { protectedProcedure, createTRPCRouter } from "~/server/api/trpc";
 
-import {
-  TaskCollectionCreateSchema,
-  TaskCollectionUpdateSchema,
-  TaskCollectionFilterSchema,
-} from "~/schemas";
-import type {
-  TaskCollectionFilter,
-  Task,
-  TaskCollection,
-  Maybe,
-} from "~/types";
+import { TaskCollectionFilterSchema } from "~/schemas";
+import type { TaskCollectionFilter, TaskCollection, Maybe } from "~/types";
 
 const getTaskCollections = async ({
   prisma,

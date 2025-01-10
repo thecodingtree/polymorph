@@ -74,13 +74,14 @@ export const taskRouter = createTRPCRouter({
           ownerId: ctx.session?.user.id,
           type: input.type,
           description: input?.description,
-          content: input?.content,
+          title: input?.title,
           entityId: input.entity,
+          collectionId: input.collection,
           priority: input?.priority,
-          private: input?.isPrivate,
+          private: input?.private,
           completed: input?.completed,
           startDate: input?.startDate,
-          endDate: input?.endDate,
+          endDate: input?.endDate ?? undefined, // defaults to now() if not provided
         },
       });
     }),

@@ -11,6 +11,9 @@ const jsonSchema: z.ZodType<Json> = z.lazy(() =>
   z.union([literalSchema, z.array(jsonSchema), z.record(jsonSchema)]),
 );
 
+const MaybeStringSchema = z.string().optional().nullable();
+const MaybeDateSchema = z.date().optional().nullable();
+
 export const AttributeValueSchema = z.object({
   attributeId: z.string().optional(),
   type: z.nativeEnum(AttributeValueType),
@@ -51,24 +54,26 @@ export const TasksFilterSchema = z.object({
 
 export const TaskCreateSchema = z.object({
   type: z.nativeEnum(TaskType),
-  description: z.string().min(1),
-  content: z.string().optional(),
+  title: z.string().min(1),
+  description: MaybeStringSchema,
   entity: z.string().optional(),
   priority: z.nativeEnum(TaskPriority).optional(),
-  isPrivate: z.boolean().optional(),
+  private: z.boolean().optional(),
   completed: z.boolean().optional(),
-  startDate: z.date().optional(),
-  endDate: z.date().optional(),
+  collection: z.string().optional(),
+  startDate: MaybeDateSchema,
+  endDate: MaybeDateSchema,
 });
 
 export const TaskUpdateSchema = z.object({
   type: z.nativeEnum(TaskType).optional(),
   description: z.string().optional(),
-  content: z.string().optional(),
+  title: z.string().optional(),
   entity: z.string().optional(),
   priority: z.nativeEnum(TaskPriority).optional(),
-  isPrivate: z.boolean().optional(),
+  private: z.boolean().optional(),
   completed: z.boolean().optional(),
+  collection: z.string().optional(),
   startDate: z.date().optional(),
   endDate: z.date().optional(),
 });

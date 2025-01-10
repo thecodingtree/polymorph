@@ -150,8 +150,8 @@ model Task {
   entityId    String?      @db.ObjectId
   collection TaskCollection? @relation(fields: [collectionId], references: [id], onDelete: SetNull)
   collectionId String?     @db.ObjectId
-  description String
-  content     String?
+  title     String
+  description String?
   startDate   DateTime?
   endDate     DateTime     @default(now())
   priority    TaskPriority @default(LOW)

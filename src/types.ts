@@ -6,6 +6,8 @@ import type {
   CoreEntityCreateSchema,
   CoreEntityFilterSchema,
   TasksFilterSchema,
+  TaskCreateSchema,
+  TaskUpdateSchema,
   TaskCollectionFilterSchema,
 } from "./schemas";
 
@@ -17,7 +19,7 @@ export type CoreEntityBlueprintType = Prisma.CoreEntityBlueprintGetPayload<{
   };
 }>;
 
-export type Maybe<T> = T | null;
+export type Maybe<T> = NonNullable<T> | undefined | null;
 interface Attribute {
   id: string;
   name: string;
@@ -57,20 +59,22 @@ export interface Task {
   id: string;
   type: TaskType;
   ownerId: Maybe<string>;
-  description: string;
-  content: Maybe<string>;
+  title: string;
+  description: Maybe<string>;
   completed: boolean;
   private: boolean;
   startDate: Maybe<Date>;
   endDate: Maybe<Date>;
   priority: TaskPriority;
   entityId: Maybe<string>;
+  collectionId: Maybe<string>;
   createdAt: Date;
   updatedAt: Date;
 }
 
 export type TaskFilter = z.infer<typeof TasksFilterSchema>;
-
+export type TaskCreate = z.infer<typeof TaskCreateSchema>;
+export type TaskUpdate = z.infer<typeof TaskUpdateSchema>;
 export interface TaskCollection {
   id: string;
   name: string;

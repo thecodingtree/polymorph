@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form";
 
 import type { z } from "zod";
 
-import { TaskCreateSchema } from "~/schemas";
+import { TaskUpdateSchema } from "~/schemas";
 
 import { Button } from "~/app/_components/ui/button";
 import { Switch } from "~/app/_components/ui/switch";
@@ -28,43 +28,47 @@ import {
   FormMessage,
 } from "~/app/_components/ui/form";
 
-import { Input } from "~/app/_components/ui/input";
+import type { Task, TaskUpdate } from "~/types";
 import { TaskPriority, TaskType } from "~/types";
 import { Textarea } from "~/app/_components/ui/textarea";
 import DateTimePicker from "~/app/_components/controls/DateTime/DateTimePicker";
 
 import { getDateRounded } from "~/app/_components/controls/DateTime/utils";
 
-export default function AddTaskForm({
-  taskType,
+export default function TaskForm({
+  task,
   submitLabel,
   onSubmit,
   submitting,
 }: {
-  taskType: TaskType;
+  task: Task;
   submitLabel?: string;
-  onSubmit: (values: z.infer<typeof TaskCreateSchema>) => void;
+  onSubmit: (values: TaskUpdate) => void;
   dateType?: "dueDate" | "startDate";
   submitting?: boolean;
 }) {
-  const dateType = taskType === TaskType.EVENT ? "startDate" : "dueDate";
+  const dateType = task?.type === TaskType.EVENT ? "startDate" : "dueDate";
 
-  const form = useForm<z.infer<typeof TaskCreateSchema>>({
-    resolver: zodResolver(TaskCreateSchema),
+  const form = useForm<z.infer<typeof TaskUpdateSchema>>({
+    resolver: zodResolver(TaskUpdateSchema),
     defaultValues: {
-      type: taskType,
-      description: "",
-      content: "",
-      priority: TaskPriority.LOW,
-      isPrivate: false,
-      completed: false,
+      type: task.type,
+      description: task.description ?? "",
+      title: task.title ?? "",
+      priority: task.priority,
+      private: task.private,
+      completed: task.completed,
       startDate:
-        dateType === "startDate" ? getDateRounded(new Date()) : undefined,
-      endDate: getDateRounded(
-        dateType === "dueDate"
-          ? new Date()
-          : new Date(new Date().getHours() + 1),
-      ),
+        dateType === "startDate"
+          ? getDateRounded(task.startDate ?? new Date())
+          : undefined,
+      endDate: task.endDate
+        ? getDateRounded(task.endDate)
+        : getDateRounded(
+            dateType === "dueDate"
+              ? new Date()
+              : new Date(new Date().getHours() + 1),
+          ),
     },
   });
 
@@ -79,28 +83,25 @@ export default function AddTaskForm({
               <FormItem>
                 <FormLabel>Description</FormLabel>
                 <FormControl>
-                  <Input
-                    placeholder="Required. Must be at least 1 character."
-                    {...field}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="content"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Content</FormLabel>
-                <FormControl>
                   <Textarea placeholder="" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
+          {/* <FormField
+            control={form.control}
+            name="title"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Title</FormLabel>
+                <FormControl>
+                  <Textarea placeholder="" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          /> */}
           {dateType === "startDate" && (
             <FormField
               control={form.control}
@@ -166,7 +167,7 @@ export default function AddTaskForm({
           />
           <FormField
             control={form.control}
-            name="isPrivate"
+            name="private"
             render={({ field }) => (
               <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
                 <div className="space-y-0.5">

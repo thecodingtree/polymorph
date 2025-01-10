@@ -1,11 +1,14 @@
+import Image from "next/image";
 import { IconButton } from "~/app/_components/controls/Buttons";
 
-import { IconBrandDiscord } from "@tabler/icons-react";
+import branddiscord from "~/assets/images/branddiscord.png";
 
 const getOAuthIcon = (id: string) => {
   switch (id) {
     case "discord":
-      return <IconBrandDiscord />;
+      return (
+        <Image src={branddiscord} alt="discord-login" width={24} height={24} />
+      );
     default:
       return null;
   }

@@ -1,6 +1,7 @@
 import { coreEntityRouter } from "~/server/api/routers/coreEntity";
 import { coreEntityBlueprintRouter } from "~/server/api/routers/coreEntityBlueprint";
 import { taskRouter } from "~/server/api/routers/task";
+import { taskCollectionRouter } from "~/server/api/routers/taskCollection";
 import { createCallerFactory, createTRPCRouter } from "~/server/api/trpc";
 
 /**
@@ -12,6 +13,7 @@ export const appRouter = createTRPCRouter({
   coreEntity: coreEntityRouter,
   coreEntityBlueprint: coreEntityBlueprintRouter,
   task: taskRouter,
+  taskCollection: taskCollectionRouter,
 });
 
 // export type definition of API

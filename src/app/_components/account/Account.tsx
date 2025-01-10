@@ -1,4 +1,4 @@
-import { IconChevronRight } from "@tabler/icons-react";
+import { ChevronRight } from "lucide-react";
 
 import { auth } from "~/server/auth";
 
@@ -28,7 +28,7 @@ export async function Account() {
         </p>
       </div>
 
-      <IconChevronRight size={24} stroke={1.5} />
+      <ChevronRight size={24} />
     </div>
   );
 }

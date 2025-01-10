@@ -1,9 +1,9 @@
-import { api } from "~/trpc/server";
+import TaskList from "../_components/tasks/task-list";
 
-import TasksList from "~/app/_components/tasks/TasksList";
-
-export default async function Tasks() {
-  const tasks = await api.task.list({});
-
-  return <TasksList tasks={tasks} selectedTasks={[]} />;
+export default async function TasksPage() {
+  return (
+    <div className="flex flex-col gap-8">
+      <TaskList />
+    </div>
+  );
 }

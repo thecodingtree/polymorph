@@ -9,20 +9,18 @@ import {
   CardContent,
 } from "~/app/_components/ui/card";
 
-import type { TaskCollection, TaskUpdate, TaskCreate } from "~/types";
+import type { TaskCollection, TaskCreate } from "~/types";
 import { TaskType } from "~/types";
 import TaskItem from "./task-item";
 
 type TaskCollectionProps = {
   collection: TaskCollection;
   addTask: (collectionId: string, task: TaskCreate) => void;
-  updateTask: (collectionId: string, taskId: string, data: TaskUpdate) => void;
 };
 
 export default function TaskCollection({
   collection,
   addTask,
-  updateTask,
 }: TaskCollectionProps) {
   const [newTaskTitle, setNewTaskTitle] = useState("");
 
@@ -56,13 +54,7 @@ export default function TaskCollection({
         </div>
         <div className="space-y-2">
           {collection?.tasks?.map((task) => (
-            <TaskItem
-              key={task.id}
-              task={task}
-              updateTask={(id, updates) =>
-                updateTask(collection.id, id, updates)
-              }
-            />
+            <TaskItem key={task.id} task={task} />
           ))}
         </div>
       </CardContent>

@@ -2,73 +2,172 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-    provider = "prisma-client-js"
+  provider = "prisma-client-js"
 }
 
 datasource db {
-    provider = "postgresql"
-    // NOTE: When using mysql or sqlserver, uncomment the @db.Text annotations in model Account below
-    // Further reading:
-    // https://next-auth.js.org/adapters/prisma#create-the-prisma-schema
-    // https://www.prisma.io/docs/reference/api-reference/prisma-schema-reference#string
-    url      = env("DATABASE_URL")
-}
-
-model Post {
-    id        Int      @id @default(autoincrement())
-    name      String
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
-
-    createdBy   User   @relation(fields: [createdById], references: [id])
-    createdById String
-
-    @@index([name])
+  provider = "mongodb"
+  // NOTE: When using mysql or sqlserver, uncomment the @db.Text annotations in model Account below
+  // Further reading:
+  // https://next-auth.js.org/adapters/prisma#create-the-prisma-schema
+  // https://www.prisma.io/docs/reference/api-reference/prisma-schema-reference#string
+  url      = env("DATABASE_URL")
 }
 
 // Necessary for Next auth
 model Account {
-    id                       String  @id @default(cuid())
-    userId                   String
-    type                     String
-    provider                 String
-    providerAccountId        String
-    refresh_token            String? // @db.Text
-    access_token             String? // @db.Text
-    expires_at               Int?
-    token_type               String?
-    scope                    String?
-    id_token                 String? // @db.Text
-    session_state            String?
-    user                     User    @relation(fields: [userId], references: [id], onDelete: Cascade)
-    refresh_token_expires_in Int?
+  id                       String  @id @default(auto()) @map("_id") @db.ObjectId
+  userId                   String  @db.ObjectId
+  type                     String
+  provider                 String
+  providerAccountId        String
+  refresh_token            String? // @db.Text
+  access_token             String? // @db.Text
+  expires_at               Int?
+  token_type               String?
+  scope                    String?
+  id_token                 String? // @db.Text
+  session_state            String?
+  user                     User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  refresh_token_expires_in Int?
 
-    @@unique([provider, providerAccountId])
+  @@unique([provider, providerAccountId])
 }
 
 model Session {
-    id           String   @id @default(cuid())
-    sessionToken String   @unique
-    userId       String
-    expires      DateTime
-    user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  sessionToken String   @unique
+  userId       String   @db.ObjectId
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model User {
-    id            String    @id @default(cuid())
-    name          String?
-    email         String?   @unique
-    emailVerified DateTime?
-    image         String?
-    accounts      Account[]
-    sessions      Session[]
-    posts         Post[]
+  id            String                @id @default(auto()) @map("_id") @db.ObjectId
+  name          String?
+  email         String?               @unique
+  emailVerified DateTime?
+  image         String?
+  accounts      Account[]
+  sessions      Session[]
+  entities      CoreEntity[]
+  blueprints    CoreEntityBlueprint[]
+  attributes    Attribute[]
+  tasks         Task[]
+  taskCollections TaskCollection[]
 }
 
 model VerificationToken {
-    identifier String
-    token      String   @unique
-    expires    DateTime
+  identifier String   @id @map("_id") @db.ObjectId
+  token      String   @unique
+  expires    DateTime
 
-    @@unique([identifier, token])
+  @@unique([identifier, token])
+}
+
+model CoreEntity {
+  id          String           @id @default(auto()) @map("_id") @db.ObjectId
+  blueprintId String?          @db.ObjectId
+  owner       User?            @relation(fields: [ownerId], references: [id])
+  ownerId     String?          @db.ObjectId
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+  values      AttributeValue[]
+  tasks       Task[]
+}
+
+type AttributeValue {
+  attributeId String?            @db.ObjectId
+  type        AttributeValueType @default(STRING)
+  value       Json?              @default("{}")
+}
+
+model CoreEntityBlueprint {
+  id          String                 @id @default(auto()) @map("_id") @db.ObjectId
+  owner       User?                  @relation(fields: [ownerId], references: [id])
+  ownerId     String?                @db.ObjectId
+  public      Boolean                @default(false)
+  name        String                 @default("Generic Schema")
+  description String?
+  attributes  CoreEntityAttributes[]
+  parent      CoreEntityBlueprint?   @relation("BlueprintsHierarchy", fields: [parentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  parentId    String?                @db.ObjectId
+  children    CoreEntityBlueprint[]  @relation("BlueprintsHierarchy")
+  createdAt   DateTime               @default(now())
+  updatedAt   DateTime               @updatedAt
+}
+
+enum AttributeValueType {
+  STRING
+  NUMBER
+  BOOLEAN
+  DATE
+  TIME
+  DATETIME
+  OBJECT
+}
+
+model Attribute {
+  id               String                 @id @default(auto()) @map("_id") @db.ObjectId
+  name             String                 @default("Generic String")
+  description      String?
+  valueType        AttributeValueType     @default(STRING)
+  public           Boolean                @default(false)
+  owner            User?                  @relation(fields: [ownerId], references: [id])
+  ownerId          String?                @db.ObjectId
+  createdAt        DateTime               @default(now())
+  updatedAt        DateTime               @updatedAt
+  linkedAttributes CoreEntityAttributes[]
+}
+
+model CoreEntityAttributes {
+  id           String               @id @default(auto()) @map("_id") @db.ObjectId
+  blueprint    CoreEntityBlueprint? @relation(fields: [coreEntityId], references: [id])
+  attribute    Attribute?           @relation(fields: [attributeId], references: [id])
+  required     Boolean              @default(false)
+  coreEntityId String?              @db.ObjectId
+  attributeId  String?              @db.ObjectId
+}
+
+enum TaskPriority {
+  LOW
+  MEDIUM
+  HIGH
+}
+
+enum TaskType {
+  TODO
+  EVENT
+  REMINDER
+}
+
+model Task {
+  id          String       @id @default(auto()) @map("_id") @db.ObjectId
+  type        TaskType     @default(TODO)
+  owner       User?        @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  ownerId     String?      @db.ObjectId
+  entity      CoreEntity?  @relation(fields: [entityId], references: [id], onDelete: SetNull)
+  entityId    String?      @db.ObjectId
+  collection TaskCollection? @relation(fields: [collectionId], references: [id], onDelete: SetNull)
+  collectionId String?     @db.ObjectId
+  title     String
+  description String?
+  startDate   DateTime?
+  endDate     DateTime     @default(now())
+  priority    TaskPriority @default(LOW)
+  completed   Boolean      @default(false)
+  private     Boolean      @default(false)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+}
+
+model TaskCollection {
+  id          String  @id @default(auto()) @map("_id") @db.ObjectId
+  owner       User?   @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  ownerId     String? @db.ObjectId
+  name        String
+  description String?
+  tasks       Task[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }

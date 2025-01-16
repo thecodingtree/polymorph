@@ -31,6 +31,7 @@ import {
 import type { Task, TaskUpdate } from "~/types";
 import { TaskPriority, TaskType } from "~/types";
 import { Textarea } from "~/app/_components/ui/textarea";
+import { Input } from "~/app/_components/ui/input";
 import DateTimePicker from "~/app/_components/controls/DateTime/DateTimePicker";
 
 import { getDateRounded } from "~/app/_components/controls/DateTime/utils";
@@ -72,10 +73,25 @@ export default function TaskForm({
     },
   });
 
+  const { isDirty, isValid } = form.formState;
+
   return (
     <div className="m-2">
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+          <FormField
+            control={form.control}
+            name="title"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Title</FormLabel>
+                <FormControl>
+                  <Input placeholder="" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
           <FormField
             control={form.control}
             name="description"
@@ -89,19 +105,6 @@ export default function TaskForm({
               </FormItem>
             )}
           />
-          {/* <FormField
-            control={form.control}
-            name="title"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Title</FormLabel>
-                <FormControl>
-                  <Textarea placeholder="" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          /> */}
           {dateType === "startDate" && (
             <FormField
               control={form.control}
@@ -185,11 +188,25 @@ export default function TaskForm({
               </FormItem>
             )}
           />
+          <FormField
+            control={form.control}
+            name="completed"
+            render={({ field }) => (
+              <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                <div className="space-y-0.5">
+                  <FormLabel className="text-base">Completed</FormLabel>
+                </div>
+                <FormControl>
+                  <Switch
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
+                  />
+                </FormControl>
+              </FormItem>
+            )}
+          />
           <div className="mt-2 flex flex-col justify-center">
-            <Button
-              type="submit"
-              disabled={submitting ?? !form.formState.isValid}
-            >
+            <Button type="submit" disabled={!isDirty || !isValid || submitting}>
               {submitLabel ?? "Add Task"}
             </Button>
           </div>

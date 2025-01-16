@@ -10,7 +10,6 @@ import { Input } from "~/app/_components/ui/input";
 import TaskCollection from "./task-collection";
 import TaskListView from "./task-list-view";
 
-import type { TaskUpdate } from "~/types";
 import { type TaskCreateSchema } from "~/schemas";
 
 import { type z } from "zod";
@@ -21,7 +20,6 @@ export default function TaskList() {
   const { data: collections, refetch } = api.taskCollection.list.useQuery({});
 
   const addTaskMutation = api.task.create.useMutation();
-  const updateTaskMutation = api.task.update.useMutation();
 
   const addCollection = () => {
     // if (newCollectionName.trim()) {
@@ -52,17 +50,6 @@ export default function TaskList() {
         void refetch();
       },
     });
-  };
-
-  const updateTask = (_: string, taskId: string, taskUpdate: TaskUpdate) => {
-    updateTaskMutation.mutate(
-      { ids: [taskId], data: taskUpdate },
-      {
-        onSuccess: () => {
-          void refetch();
-        },
-      },
-    );
   };
 
   return (
@@ -101,16 +88,11 @@ export default function TaskList() {
               key={collection.id}
               collection={collection}
               addTask={addTask}
-              updateTask={updateTask}
             />
           ))}
         </div>
       ) : (
-        <TaskListView
-          collections={collections ?? []}
-          addTask={addTask}
-          updateTask={updateTask}
-        />
+        <TaskListView collections={collections ?? []} addTask={addTask} />
       )}
     </div>
   );

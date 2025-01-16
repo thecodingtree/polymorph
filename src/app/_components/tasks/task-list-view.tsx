@@ -10,17 +10,15 @@ import {
 } from "~/app/_components/ui/accordion";
 import TaskItem from "./task-item";
 
-import type { TaskCollection, TaskUpdate, TaskCreate } from "~/types";
+import type { TaskCollection, TaskCreate } from "~/types";
 import { TaskType } from "~/types";
 
 export default function TaskListView({
   collections,
   addTask,
-  updateTask,
 }: {
   collections: TaskCollection[];
   addTask: (collectionId: string, task: TaskCreate) => void;
-  updateTask: (collectionId: string, taskId: string, data: TaskUpdate) => void;
 }) {
   const [newTaskTitles, setNewTaskTitles] = useState<Record<string, string>>(
     {},
@@ -28,7 +26,6 @@ export default function TaskListView({
 
   const handleAddTask = (collectionId: string) => {
     const newTaskTitle = newTaskTitles[collectionId] ?? "";
-    console.log("handleAddTask", collectionId, newTaskTitle, newTaskTitles);
     if (newTaskTitle.trim()) {
       addTask(collectionId, {
         type: TaskType.TODO,
@@ -48,13 +45,7 @@ export default function TaskListView({
           <AccordionContent>
             <div className="space-y-2">
               {collection?.tasks?.map((task) => (
-                <TaskItem
-                  key={task.id}
-                  task={task}
-                  updateTask={(id, updates) =>
-                    updateTask(collection.id, id, updates)
-                  }
-                />
+                <TaskItem key={task.id} task={task} />
               ))}
               <div className="mt-2 flex items-center">
                 <Input

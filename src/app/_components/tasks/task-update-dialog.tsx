@@ -17,7 +17,7 @@ export default function UpdateTaskDialog({
   onUpdate,
 }: {
   task: Task;
-  children: React.ReactNode;
+  children?: React.ReactNode;
   onUpdate?: (taskId: string, task: TaskUpdate) => void;
 }) {
   const [opened, setOpened] = useState(false);
@@ -25,7 +25,7 @@ export default function UpdateTaskDialog({
     <Dialog open={opened} onOpenChange={setOpened}>
       <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent>
-        <DialogTitle>{task?.title}</DialogTitle>
+        <DialogTitle>Edit</DialogTitle>
         {/* <FilterSelect
           allowNone={false}
           allowMultiple={false}
@@ -39,7 +39,7 @@ export default function UpdateTaskDialog({
         <TaskForm
           task={task}
           submitLabel="Save"
-          onSubmit={(update) => onUpdate?.(task.id, update)}
+          onSubmit={(update) => (onUpdate?.(task.id, update), setOpened(false))}
         />
       </DialogContent>
     </Dialog>

@@ -54,7 +54,6 @@ export default function TaskList() {
 
   return (
     <div className="mx-2 min-w-96">
-      <h1 className="mb-6 text-3xl font-bold">Task List</h1>
       <div className="mb-6 flex items-center">
         <Input
           type="text"

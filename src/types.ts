@@ -80,7 +80,6 @@ export interface TaskCollection {
   name: string;
   description: Maybe<string>;
   ownerId: Maybe<string>;
-  tasks: Maybe<Task[]>;
   createdAt: Date;
   updatedAt: Date;
 }

@@ -1,5 +1,11 @@
+"use client";
 import { useState } from "react";
 import { PlusCircle } from "lucide-react";
+
+import { api } from "~/trpc/react";
+
+import { toast } from "sonner";
+
 import { Button } from "~/app/_components/ui/button";
 import { Input } from "~/app/_components/ui/input";
 import {
@@ -9,26 +15,117 @@ import {
   CardContent,
 } from "~/app/_components/ui/card";
 
-import type { TaskCollection, TaskCreate } from "~/types";
-import { TaskType } from "~/types";
+import type { TaskCollection, TaskUpdate } from "~/types";
+import { TaskPriority, TaskType, type Task } from "~/types";
 import TaskItem from "./task-item";
-
-type TaskCollectionProps = {
-  collection: TaskCollection;
-  addTask: (collectionId: string, task: TaskCreate) => void;
-};
 
 export default function TaskCollection({
   collection,
-  addTask,
-}: TaskCollectionProps) {
+}: {
+  collection: TaskCollection;
+}) {
   const [newTaskTitle, setNewTaskTitle] = useState("");
+
+  const queryFilter = {
+    collection: [collection.id],
+  };
+
+  const { data: tasks, isLoading } = api.task.list.useQuery(queryFilter);
+
+  const utils = api.useUtils();
+  const addTaskMutation = api.task.create.useMutation({
+    onMutate: async (newTask) => {
+      // Cancel any ongoing list task queries
+      await utils.task.list.cancel();
+
+      // Snapshot the previous value
+      const previousTasks = utils.task.list.getData(queryFilter);
+
+      // Optimistically update the task
+      utils.task.list.setData(queryFilter, (tasks) => {
+        const pendingTask = {
+          id: `pending-${Date.now()}`,
+          collectionId: newTask?.collection,
+          description: null,
+          ownerId: null,
+          entityId: null,
+          completed: false,
+          private: false,
+          startDate: null,
+          endDate: null,
+          priority: TaskPriority.LOW,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          ...newTask,
+        } satisfies Task;
+
+        return tasks ? [pendingTask, ...tasks] : [pendingTask];
+      });
+
+      return { previousTasks };
+    },
+    onError(err, _vars, ctx) {
+      console.log("Error adding task", err);
+
+      toast.error("Error adding task");
+
+      // Revert the update on error
+      utils.task.list.setData({}, ctx?.previousTasks);
+    },
+  });
+  const updateTaskMutation = api.task.update.useMutation({
+    async onMutate({ ids, data }) {
+      // Cancel any ongoing list task queries
+      await utils.task.list.cancel();
+
+      // Snapshot the previous value
+      const previousTasks = utils.task.list.getData(queryFilter);
+
+      // Optimistically update the task
+      utils.task.list.setData(queryFilter, (tasks) => {
+        return tasks?.map((task) => {
+          if (ids.includes(task.id)) {
+            return { ...task, ...data };
+          }
+          return task;
+        });
+      });
+
+      return { previousTasks };
+    },
+    onError(err, _vars, ctx) {
+      console.log("Error updating task", err);
+
+      toast.error("Error updating task");
+
+      // Revert the update on error
+      utils.task.list.setData({}, ctx?.previousTasks);
+    },
+  });
+
+  const updateTask = (taskId: string, taskData: TaskUpdate) => {
+    updateTaskMutation.mutate(
+      { ids: [taskId], data: taskData },
+      {
+        onSuccess: () => {
+          void utils.task.list.invalidate(queryFilter);
+        },
+      },
+    );
+  };
 
   const handleAddTask = () => {
     if (newTaskTitle.trim()) {
-      addTask(collection.id, {
+      const newTask = {
         type: TaskType.TODO,
         title: newTaskTitle.trim(),
+        collection: collection.id,
+      };
+
+      addTaskMutation.mutate(newTask, {
+        onSuccess: () => {
+          void utils.task.list.invalidate(queryFilter);
+        },
       });
       setNewTaskTitle("");
     }
@@ -46,17 +143,34 @@ export default function TaskCollection({
             placeholder="New Task"
             value={newTaskTitle}
             onChange={(e) => setNewTaskTitle(e.target.value)}
+            disabled={isLoading}
             className="mr-2"
           />
-          <Button onClick={handleAddTask} size="sm">
+          <Button type="button" onClick={handleAddTask} size="sm">
             <PlusCircle className="h-4 w-4" />
           </Button>
         </div>
         <div className="space-y-2">
-          {collection?.tasks?.map((task) => (
-            <TaskItem key={task.id} task={task} />
-          ))}
+          <ul>
+            {tasks?.map((task) => (
+              <li key={task.id}>
+                <TaskItem
+                  task={task}
+                  onChecked={(checked) =>
+                    updateTask(task.id, { completed: checked })
+                  }
+                />
+              </li>
+            ))}
+          </ul>
         </div>
+        {/* <UpdateTaskDialog task={taskData} onUpdate={updateTask}>
+        <Button variant="ghost" className="flex-grow justify-start">
+          <span className={taskData?.completed ? "line-through" : ""}>
+            {taskData?.title}
+          </span>
+        </Button>
+      </UpdateTaskDialog> */}
       </CardContent>
     </Card>
   );

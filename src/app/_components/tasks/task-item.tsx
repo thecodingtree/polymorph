@@ -1,59 +1,31 @@
-"use client";
-
-import { useState } from "react";
 import { Checkbox } from "~/app/_components/ui/checkbox";
-import { Button } from "~/app/_components/ui/button";
 
-import { api } from "~/trpc/react";
+import { cn } from "~/lib/utils";
 
-import UpdateTaskDialog from "./task-update-dialog";
+import type { Task } from "~/types";
 
-import type { Task, TaskUpdate } from "~/types";
-import { toast } from "sonner";
-
-export default function TaskItem({ task }: { task: Task }) {
-  const [taskData, setTaskData] = useState<Task>(task);
-
-  const mutateTask = api.task.update.useMutation();
-
-  const updateTask = (taskId: string, updates: TaskUpdate) => {
-    const curTask = taskData;
-
-    setTaskData({ ...taskData, ...updates });
-
-    mutateTask.mutate(
-      {
-        ids: [taskId],
-        data: updates,
-      },
-      {
-        onSuccess: () => {
-          setTaskData({ ...taskData, ...updates });
-        },
-        onError: (error) => {
-          console.error("Error updating task", error);
-          toast.error("Error updating task");
-          setTaskData(curTask);
-        },
-      },
-    );
-  };
+export default function TaskItem({
+  task,
+  onChecked,
+}: {
+  task: Task;
+  onChecked?: (checked: boolean) => void;
+}) {
+  const isPending = task.id.includes("pending");
 
   return (
-    <div className="flex items-center space-x-2">
+    <div
+      className={cn(
+        "flex items-center space-x-2 p-2",
+        isPending && "opacity-50",
+      )}
+    >
       <Checkbox
-        checked={taskData.completed}
-        onCheckedChange={(checked) =>
-          updateTask(taskData.id, { completed: checked as boolean })
-        }
+        checked={task.completed}
+        onCheckedChange={onChecked}
+        disabled={isPending}
       />
-      <UpdateTaskDialog task={taskData} onUpdate={updateTask}>
-        <Button variant="ghost" className="flex-grow justify-start">
-          <span className={taskData?.completed ? "line-through" : ""}>
-            {taskData?.title}
-          </span>
-        </Button>
-      </UpdateTaskDialog>
+      <span className="ml-2">{task?.title}</span>
     </div>
   );
 }

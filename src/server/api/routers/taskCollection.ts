@@ -24,9 +24,6 @@ const getTaskCollections = async ({
       tasks: { some: { id: { in: tasks } } },
       ownerId: user,
     },
-    include: {
-      tasks: true,
-    },
   })) satisfies TaskCollection[];
 };
 

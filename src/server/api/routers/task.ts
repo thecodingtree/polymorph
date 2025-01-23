@@ -20,12 +20,16 @@ const getTasks = async ({
   input: TaskFilter;
   user: string;
 }): Promise<Task[]> => {
-  const { type, completed, startDate, endDate, entity } = input;
+  const { type, collection, completed, startDate, endDate, entity } = input;
 
   const filters = [];
 
   if (type?.length) {
     filters.push({ type: { in: type } });
+  }
+
+  if (collection?.length) {
+    filters.push({ collectionId: { in: collection } });
   }
 
   if (completed) {
@@ -46,6 +50,7 @@ const getTasks = async ({
 
   return prisma.task.findMany({
     where: { AND: [...filters, { ownerId: user }] },
+    orderBy: [{ completed: "asc" }, { createdAt: "desc" }],
   });
 };
 

@@ -7,9 +7,10 @@ import { auth } from "~/server/auth";
 import { TRPCReactProvider } from "~/trpc/react";
 import { Toaster } from "~/app/_components/ui/sonner";
 
-import MainLayout from "~/app/_components/layouts/main-layout";
+import MainLayout from "~/app/_components/layouts/auth-layout";
 
 import { cn } from "~/lib/utils";
+import { HydrateClient } from "~/trpc/server";
 
 export const metadata: Metadata = {
   title: "PolyMorph",
@@ -38,7 +39,9 @@ export default async function RootLayout({
         )}
       >
         <TRPCReactProvider>
-          {session?.user ? <MainLayout>{children}</MainLayout> : children}
+          <HydrateClient>
+            {session?.user ? <MainLayout>{children}</MainLayout> : children}
+          </HydrateClient>
         </TRPCReactProvider>
         {/* <Analytics /> */}
         <Toaster />

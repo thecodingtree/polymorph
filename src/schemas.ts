@@ -46,6 +46,7 @@ export const CoreEntityBlueprintFilterSchema = z.object({
 
 export const TasksFilterSchema = z.object({
   type: z.array(z.nativeEnum(TaskType)).optional(),
+  collection: z.array(z.string()).optional(),
   completed: z.boolean().optional(),
   startDate: z.date().optional(),
   endDate: z.date().optional(),

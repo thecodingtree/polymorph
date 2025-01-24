@@ -14,6 +14,7 @@ import {
   CardTitle,
   CardContent,
 } from "~/app/_components/ui/card";
+import { Collapsible } from "~/app/_components/ui/collapsible";
 
 import type { TaskCollection, TaskUpdate } from "~/types";
 import { TaskPriority, TaskType, type Task } from "~/types";
@@ -103,6 +104,38 @@ export default function TaskCollection({
     },
   });
 
+  const deleteTaskMutation = api.task.delete.useMutation({
+    onMutate: async (toDelete) => {
+      // Cancel any ongoing list task queries
+      await utils.task.list.cancel();
+
+      // Snapshot the previous value
+      const previousTasks = utils.task.list.getData(queryFilter);
+
+      // Optimistically remove the task
+      utils.task.list.setData(queryFilter, (tasks) => {
+        tasks
+          ?.filter((task) => toDelete?.ids?.includes(task.id))
+          ?.map((task) => {
+            task.id = `pending-${task.id}`;
+            return task;
+          });
+
+        return tasks;
+      });
+
+      return { previousTasks };
+    },
+    onError(err, _vars, ctx) {
+      console.log("Error adding task", err);
+
+      toast.error("Error adding task");
+
+      // Revert the update on error
+      utils.task.list.setData({}, ctx?.previousTasks);
+    },
+  });
+
   const updateTask = (taskId: string, taskData: TaskUpdate) => {
     updateTaskMutation.mutate(
       { ids: [taskId], data: taskData },
@@ -152,16 +185,27 @@ export default function TaskCollection({
         </div>
         <div className="space-y-2">
           <ul>
-            {tasks?.map((task) => (
-              <li key={task.id}>
+            <li>
+              {tasks?.map((task) => (
                 <TaskItem
+                  key={task.id}
                   task={task}
                   onChecked={(checked) =>
                     updateTask(task.id, { completed: checked })
                   }
+                  onDelete={(taskId) => {
+                    deleteTaskMutation.mutate(
+                      { ids: [taskId] },
+                      {
+                        onSettled: () => {
+                          void utils.task.list.invalidate(queryFilter);
+                        },
+                      },
+                    );
+                  }}
                 />
-              </li>
-            ))}
+              ))}
+            </li>
           </ul>
         </div>
         {/* <UpdateTaskDialog task={taskData} onUpdate={updateTask}>

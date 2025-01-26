@@ -14,7 +14,6 @@ import {
   CardTitle,
   CardContent,
 } from "~/app/_components/ui/card";
-import { Collapsible } from "~/app/_components/ui/collapsible";
 
 import type { TaskCollection, TaskUpdate } from "~/types";
 import { TaskPriority, TaskType, type Task } from "~/types";
@@ -208,13 +207,6 @@ export default function TaskCollection({
             </li>
           </ul>
         </div>
-        {/* <UpdateTaskDialog task={taskData} onUpdate={updateTask}>
-        <Button variant="ghost" className="flex-grow justify-start">
-          <span className={taskData?.completed ? "line-through" : ""}>
-            {taskData?.title}
-          </span>
-        </Button>
-      </UpdateTaskDialog> */}
       </CardContent>
     </Card>
   );

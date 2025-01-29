@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { PlusCircle } from "lucide-react";
+import { CircleX, PlusCircle } from "lucide-react";
 
 import { api } from "~/trpc/react";
 
@@ -18,13 +18,18 @@ import {
 import type { TaskCollection, TaskUpdate } from "~/types";
 import { TaskPriority, TaskType, type Task } from "~/types";
 import TaskItem from "./task-item";
+import { cn } from "~/lib/utils";
+import { ConfirmDialog } from "~/app/_components/dialogs/confirm-dialog";
 
 export default function TaskCollection({
   collection,
+  onDelete,
 }: {
   collection: TaskCollection;
+  onDelete?: (taskId: string) => void;
 }) {
   const [newTaskTitle, setNewTaskTitle] = useState("");
+  const [selected, setSelected] = useState(false);
 
   const queryFilter = {
     collection: [collection.id],
@@ -164,9 +169,28 @@ export default function TaskCollection({
   };
 
   return (
-    <Card>
-      <CardHeader>
+    <Card className={cn(selected && "bg-gray-100")}>
+      <CardHeader
+        className="flex h-16 cursor-pointer flex-row items-center justify-between"
+        onClick={() => setSelected(!selected)}
+      >
         <CardTitle>{collection.name}</CardTitle>
+        {selected && (
+          <ConfirmDialog
+            title="Are you sure you want to delete this collection?"
+            description="This can not be undone"
+            onConfirm={() => onDelete?.(collection.id)}
+            trigger={
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <CircleX />
+              </Button>
+            }
+          />
+        )}
       </CardHeader>
       <CardContent>
         <div className="mb-4 flex items-center">

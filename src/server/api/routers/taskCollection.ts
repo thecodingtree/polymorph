@@ -66,11 +66,11 @@ export const taskCollectionRouter = createTRPCRouter({
   //       data: input.data,
   //     });
   //   }),
-  // delete: protectedProcedure
-  //   .input(z.object({ ids: z.array(z.string()).min(1) }))
-  //   .mutation(async ({ ctx, input }) => {
-  //     return ctx.db.task.deleteMany({
-  //       where: { id: { in: input.ids }, ownerId: ctx.session?.user.id },
-  //     });
-  //   }),
+  delete: protectedProcedure
+    .input(z.object({ ids: z.array(z.string()).min(1) }))
+    .mutation(async ({ ctx, input }) => {
+      return ctx.db.taskCollection.deleteMany({
+        where: { id: { in: input.ids }, ownerId: ctx.session?.user.id },
+      });
+    }),
 });

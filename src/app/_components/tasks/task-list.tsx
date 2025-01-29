@@ -4,8 +4,8 @@ import { Suspense } from "react";
 
 import { api } from "~/trpc/server";
 
-import TaskCollectionCreate from "./task-collection-create";
-import TaskCollection from "./task-collection";
+import TaskCollectionCreate from "~/app/_components/tasks/task-collection-create";
+import TaskCollectionList from "~/app/_components/tasks/task-collection-list";
 
 export default async function TaskList() {
   const collections = await api.taskCollection.list({});
@@ -15,9 +15,7 @@ export default async function TaskList() {
       <TaskCollectionCreate />
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         <Suspense fallback={<div>Loading...</div>}>
-          {collections?.map((collection) => (
-            <TaskCollection key={collection.id} collection={collection} />
-          ))}
+          <TaskCollectionList collections={collections} />
         </Suspense>
       </div>
     </div>

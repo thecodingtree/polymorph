@@ -4,7 +4,10 @@ import { z } from "zod";
 
 import { protectedProcedure, createTRPCRouter } from "~/server/api/trpc";
 
-import { TaskCollectionFilterSchema } from "~/schemas";
+import {
+  TaskCollectionFilterSchema,
+  TaskCollectionCreateSchema,
+} from "~/schemas";
 import type { TaskCollectionFilter, TaskCollection, Maybe } from "~/types";
 
 const getTaskCollections = async ({
@@ -20,8 +23,8 @@ const getTaskCollections = async ({
 
   return (await prisma.taskCollection.findMany({
     where: {
-      name: { contains: name },
-      tasks: { some: { id: { in: tasks } } },
+      name: name ? { contains: name } : undefined,
+      tasks: tasks ? { some: { id: { in: tasks } } } : undefined,
       ownerId: user,
     },
   })) satisfies TaskCollection[];
@@ -45,24 +48,16 @@ export const taskCollectionRouter = createTRPCRouter({
         user: ctx.session?.user.id,
       });
     }),
-  // create: protectedProcedure
-  //   .input(TaskCreateSchema)
-  //   .mutation(async ({ ctx, input }) => {
-  //     return ctx.db.task.create({
-  //       data: {
-  //         ownerId: ctx.session?.user.id,
-  //         type: input.type,
-  //         description: input?.description,
-  //         content: input?.content,
-  //         entityId: input.entity,
-  //         priority: input?.priority,
-  //         private: input?.isPrivate,
-  //         completed: input?.completed,
-  //         startDate: input?.startDate,
-  //         endDate: input?.endDate,
-  //       },
-  //     });
-  //   }),
+  create: protectedProcedure
+    .input(TaskCollectionCreateSchema)
+    .mutation(async ({ ctx, input }) => {
+      return ctx.db.taskCollection.create({
+        data: {
+          ...input,
+          ownerId: ctx.session?.user.id,
+        },
+      });
+    }),
   // update: protectedProcedure
   //   .input(z.object({ ids: z.array(z.string()), data: TaskUpdateSchema }))
   //   .mutation(async ({ ctx, input }) => {
@@ -71,11 +66,11 @@ export const taskCollectionRouter = createTRPCRouter({
   //       data: input.data,
   //     });
   //   }),
-  // delete: protectedProcedure
-  //   .input(z.object({ ids: z.array(z.string()).min(1) }))
-  //   .mutation(async ({ ctx, input }) => {
-  //     return ctx.db.task.deleteMany({
-  //       where: { id: { in: input.ids }, ownerId: ctx.session?.user.id },
-  //     });
-  //   }),
+  delete: protectedProcedure
+    .input(z.object({ ids: z.array(z.string()).min(1) }))
+    .mutation(async ({ ctx, input }) => {
+      return ctx.db.taskCollection.deleteMany({
+        where: { id: { in: input.ids }, ownerId: ctx.session?.user.id },
+      });
+    }),
 });

@@ -30,7 +30,11 @@ export default function TaskItem({
 
   return (
     <Collapsible className="w-full" onOpenChange={setOpened}>
-      <CollapsibleTrigger asChild className="w-full">
+      <CollapsibleTrigger
+        asChild
+        className="w-full"
+        onClick={(e) => e.stopPropagation()}
+      >
         <div
           className={cn(
             "flex h-8 items-center space-x-2",

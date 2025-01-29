@@ -87,7 +87,6 @@ export const TaskCollectionFilterSchema = z.object({
 export const TaskCollectionCreateSchema = z.object({
   name: z.string().min(1),
   description: z.string().optional(),
-  tasks: z.array(z.string()).optional(),
 });
 
 export const TaskCollectionUpdateSchema = z.object({

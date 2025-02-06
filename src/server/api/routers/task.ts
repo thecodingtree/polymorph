@@ -8,8 +8,8 @@ import {
   TaskCreateSchema,
   TaskUpdateSchema,
   TasksFilterSchema,
-} from "~/schemas";
-import type { TaskFilter, Task } from "~/types";
+} from "~/tasks/schemas";
+import type { TaskFilter, Task } from "~/tasks/types";
 
 const getTasks = async ({
   prisma,

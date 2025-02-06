@@ -1,8 +1,15 @@
-import { TaskIconTodo, TaskIconEvent, TaskIconReminder } from "./icons";
+import { isAfter, isSameDay } from "date-fns";
+
+import {
+  TaskIconTodo,
+  TaskIconEvent,
+  TaskIconReminder,
+} from "~/tasks/components/icons";
 
 import { Badge } from "~/app/_components/ui/badge";
 
-import { TaskPriority, TaskType, type Maybe } from "~/types";
+import { TaskPriority, TaskType, type Task } from "~/tasks/types";
+import type { Maybe } from "~/types";
 import { cn } from "~/lib/utils";
 
 export const getTaskIcon = (
@@ -70,4 +77,36 @@ export const getPrioirtyBadge = (priority: TaskPriority) => {
     default:
       return null;
   }
+};
+
+export const taskSorter = (tasks: Maybe<Task[]>) => {
+  return tasks?.sort((a, b) => {
+    /***
+     * Order by the following:
+     * 1. Completed
+     * 2. End Date
+     * 3. Title
+     *
+     * If the task is completed, it should be at the bottom of the list
+     * If the task has a due date, it should be ordered by the due date
+     * If the task has the same due date, it should be ordered by the title
+     */
+    if (a.completed !== b.completed) {
+      if (a.completed) {
+        return 1;
+      } else {
+        return -1;
+      }
+    }
+
+    if (!isSameDay(a?.endDate ?? new Date(), b?.endDate ?? new Date())) {
+      if (isAfter(a?.endDate ?? new Date(), b?.endDate ?? new Date())) {
+        return 1;
+      } else {
+        return -1;
+      }
+    }
+
+    return a?.title > b?.title ? 1 : -1;
+  });
 };

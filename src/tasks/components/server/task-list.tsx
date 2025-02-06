@@ -4,8 +4,8 @@ import { Suspense } from "react";
 
 import { api } from "~/trpc/server";
 
-import TaskCollectionCreate from "~/app/_components/tasks/task-collection-create";
-import TaskCollectionList from "~/app/_components/tasks/task-collection-list";
+import TaskCollectionCreate from "~/tasks/components/task-collection-create";
+import TaskCollectionList from "~/tasks/components/task-collection-list";
 
 export default async function TaskList() {
   const collections = await api.taskCollection.list({});

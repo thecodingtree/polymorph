@@ -1,17 +1,14 @@
 "use client";
 
-import { useState } from "react";
-
 import { useRouter } from "next/navigation";
 
 import { api } from "~/trpc/react";
 
 import { toast } from "sonner";
 
-import type { TaskCollection as TaskCollectionType } from "~/types";
+import type { TaskCollection as TaskCollectionType } from "~/tasks/types";
 
-import TaskCollection from "~/app/_components/tasks/task-collection";
-import { set } from "date-fns";
+import TaskCollection from "~/tasks/components/task-collection";
 
 export default function TaskCollectionList({
   collections,

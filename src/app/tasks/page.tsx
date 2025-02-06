@@ -1,4 +1,4 @@
-import TaskList from "../_components/tasks/task-list";
+import TaskList from "~/tasks/components/server/task-list";
 
 export default async function TasksPage() {
   return (

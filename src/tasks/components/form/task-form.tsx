@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form";
 
 import type { z } from "zod";
 
-import { TaskUpdateSchema } from "~/schemas";
+import { TaskUpdateSchema } from "~/tasks/schemas";
 
 import { Button } from "~/app/_components/ui/button";
 import { Switch } from "~/app/_components/ui/switch";
@@ -28,8 +28,8 @@ import {
   FormMessage,
 } from "~/app/_components/ui/form";
 
-import type { Task, TaskUpdate } from "~/types";
-import { TaskPriority, TaskType } from "~/types";
+import type { Task, TaskUpdate } from "~/tasks/types";
+import { TaskPriority, TaskType } from "~/tasks/types";
 import { Textarea } from "~/app/_components/ui/textarea";
 import { Input } from "~/app/_components/ui/input";
 import DateTimePicker from "~/app/_components/controls/DateTime/DateTimePicker";

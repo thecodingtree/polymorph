@@ -7,8 +7,9 @@ import { protectedProcedure, createTRPCRouter } from "~/server/api/trpc";
 import {
   TaskCollectionFilterSchema,
   TaskCollectionCreateSchema,
-} from "~/schemas";
-import type { TaskCollectionFilter, TaskCollection, Maybe } from "~/types";
+} from "~/tasks/schemas";
+import type { TaskCollectionFilter, TaskCollection } from "~/tasks/types";
+import type { Maybe } from "~/types";
 
 const getTaskCollections = async ({
   prisma,

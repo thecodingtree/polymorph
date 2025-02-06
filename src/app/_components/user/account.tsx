@@ -1,5 +1,3 @@
-import { ChevronRight } from "lucide-react";
-
 import { auth } from "~/server/auth";
 
 import {

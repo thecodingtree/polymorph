@@ -7,9 +7,9 @@ import {
   DialogTitle,
 } from "~/app/_components/ui/dialog";
 
-import TaskForm from "~/app/_components/tasks/form/task-form";
+import TaskForm from "~/tasks/components/form/task-form";
 //import FilterSelect from "~/app/_components/controls/FilterSelect";
-import { type Task, type TaskUpdate } from "~/types";
+import { type Task, type TaskUpdate } from "~/tasks/types";
 
 export default function UpdateTaskDialog({
   task,

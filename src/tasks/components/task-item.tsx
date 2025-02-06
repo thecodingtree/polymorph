@@ -1,15 +1,13 @@
-import { useState } from "react";
-
-import { getTaskDateLabel } from "~/app/_components/tasks/utils";
+import { getTaskDateLabel } from "~/tasks/utils";
 
 import { Checkbox } from "~/app/_components/ui/checkbox";
 
 import { cn } from "~/lib/utils";
 
-import type { Task } from "~/types";
-import { TaskDetails } from "./task-details";
+import type { Task } from "~/tasks/types";
+import { TaskDetails } from "~/tasks/components/task-details";
 
-import type { TaskMutator, TaskDeleter } from "~/app/hooks/tasks";
+import type { TaskMutator, TaskDeleter } from "~/tasks/hooks/useTaskApi";
 
 export default function TaskItem({
   task,

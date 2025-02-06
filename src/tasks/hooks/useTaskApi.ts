@@ -1,10 +1,10 @@
-import React, { useState } from "react";
+import { useState } from "react";
 
 import { toast } from "sonner";
 
 import { api } from "~/trpc/react";
 
-import { type Task, TaskPriority, type TaskFilter } from "~/types";
+import { type Task, TaskPriority, type TaskFilter } from "~/tasks/types";
 
 export function useTaskApi(filter: TaskFilter) {
   const [taskFilter, setTaskFilter] = useState(filter);

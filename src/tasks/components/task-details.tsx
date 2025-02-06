@@ -21,11 +21,11 @@ import {
   DrawerTrigger,
 } from "~/app/_components/ui/drawer";
 
-import TaskForm from "~/app/_components/tasks/form/task-form";
+import TaskForm from "~/tasks/components/form/task-form";
 
-import type { Task, TaskUpdate } from "~/types";
+import type { Task, TaskUpdate } from "~/tasks/types";
 
-import type { TaskMutator, TaskDeleter } from "~/app/hooks/tasks";
+import type { TaskMutator, TaskDeleter } from "~/tasks/hooks/useTaskApi";
 
 export function TaskDetails({
   task,

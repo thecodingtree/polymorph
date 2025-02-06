@@ -1,10 +1,15 @@
-import { isAfter, isBefore, isSameDay } from "date-fns";
+import { isAfter, isSameDay } from "date-fns";
 
-import { TaskIconTodo, TaskIconEvent, TaskIconReminder } from "./icons";
+import {
+  TaskIconTodo,
+  TaskIconEvent,
+  TaskIconReminder,
+} from "~/tasks/components/icons";
 
 import { Badge } from "~/app/_components/ui/badge";
 
-import { TaskPriority, TaskType, type Maybe, type Task } from "~/types";
+import { TaskPriority, TaskType, type Task } from "~/tasks/types";
+import type { Maybe } from "~/types";
 import { cn } from "~/lib/utils";
 
 export const getTaskIcon = (

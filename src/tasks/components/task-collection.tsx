@@ -13,13 +13,13 @@ import {
 
 import { ConfirmDialog } from "~/app/_components/dialogs/confirm-dialog";
 
-import type { TaskCollection } from "~/types";
-import { TaskType } from "~/types";
-import TaskItem from "./task-item";
+import { type TaskCollection, TaskType } from "~/tasks/types";
+
+import TaskItem from "~/tasks/components/task-item";
 import { cn } from "~/lib/utils";
 
-import { taskSorter } from "./utils";
-import { useTaskApi } from "~/app/hooks/tasks";
+import { taskSorter } from "~/tasks/utils";
+import { useTaskApi } from "~/tasks/hooks/useTaskApi";
 
 export default function TaskCollection({
   collection,

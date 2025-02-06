@@ -2,10 +2,6 @@
 import { useState } from "react";
 import { CircleX, PlusCircle } from "lucide-react";
 
-import { api } from "~/trpc/react";
-
-import { toast } from "sonner";
-
 import { Button } from "~/app/_components/ui/button";
 import { Input } from "~/app/_components/ui/input";
 import {
@@ -15,11 +11,15 @@ import {
   CardContent,
 } from "~/app/_components/ui/card";
 
-import type { TaskCollection, TaskUpdate } from "~/types";
-import { TaskPriority, TaskType, type Task } from "~/types";
+import { ConfirmDialog } from "~/app/_components/dialogs/confirm-dialog";
+
+import type { TaskCollection } from "~/types";
+import { TaskType } from "~/types";
 import TaskItem from "./task-item";
 import { cn } from "~/lib/utils";
-import { ConfirmDialog } from "~/app/_components/dialogs/confirm-dialog";
+
+import { taskSorter } from "./utils";
+import { useTaskApi } from "~/app/hooks/tasks";
 
 export default function TaskCollection({
   collection,
@@ -35,121 +35,8 @@ export default function TaskCollection({
     collection: [collection.id],
   };
 
-  const { data: tasks, isLoading } = api.task.list.useQuery(queryFilter);
-
-  const utils = api.useUtils();
-  const addTaskMutation = api.task.create.useMutation({
-    onMutate: async (newTask) => {
-      // Cancel any ongoing list task queries
-      await utils.task.list.cancel();
-
-      // Snapshot the previous value
-      const previousTasks = utils.task.list.getData(queryFilter);
-
-      // Optimistically update the task
-      utils.task.list.setData(queryFilter, (tasks) => {
-        const pendingTask = {
-          id: `pending-${Date.now()}`,
-          collectionId: newTask?.collection,
-          description: null,
-          ownerId: null,
-          entityId: null,
-          completed: false,
-          private: false,
-          startDate: null,
-          endDate: null,
-          priority: TaskPriority.LOW,
-          createdAt: new Date(),
-          updatedAt: new Date(),
-          ...newTask,
-        } satisfies Task;
-
-        return tasks ? [pendingTask, ...tasks] : [pendingTask];
-      });
-
-      return { previousTasks };
-    },
-    onError(err, _vars, ctx) {
-      console.log("Error adding task", err);
-
-      toast.error("Error adding task");
-
-      // Revert the update on error
-      utils.task.list.setData({}, ctx?.previousTasks);
-    },
-  });
-  const updateTaskMutation = api.task.update.useMutation({
-    async onMutate({ ids, data }) {
-      // Cancel any ongoing list task queries
-      await utils.task.list.cancel();
-
-      // Snapshot the previous value
-      const previousTasks = utils.task.list.getData(queryFilter);
-
-      // Optimistically update the task
-      utils.task.list.setData(queryFilter, (tasks) => {
-        return tasks?.map((task) => {
-          if (ids.includes(task.id)) {
-            return { ...task, ...data };
-          }
-          return task;
-        });
-      });
-
-      return { previousTasks };
-    },
-    onError(err, _vars, ctx) {
-      console.log("Error updating task", err);
-
-      toast.error("Error updating task");
-
-      // Revert the update on error
-      utils.task.list.setData({}, ctx?.previousTasks);
-    },
-  });
-
-  const deleteTaskMutation = api.task.delete.useMutation({
-    onMutate: async (toDelete) => {
-      // Cancel any ongoing list task queries
-      await utils.task.list.cancel();
-
-      // Snapshot the previous value
-      const previousTasks = utils.task.list.getData(queryFilter);
-
-      // Optimistically remove the task
-      utils.task.list.setData(queryFilter, (tasks) => {
-        tasks
-          ?.filter((task) => toDelete?.ids?.includes(task.id))
-          ?.map((task) => {
-            task.id = `pending-${task.id}`;
-            return task;
-          });
-
-        return tasks;
-      });
-
-      return { previousTasks };
-    },
-    onError(err, _vars, ctx) {
-      console.log("Error adding task", err);
-
-      toast.error("Error adding task");
-
-      // Revert the update on error
-      utils.task.list.setData({}, ctx?.previousTasks);
-    },
-  });
-
-  const updateTask = (taskId: string, taskData: TaskUpdate) => {
-    updateTaskMutation.mutate(
-      { ids: [taskId], data: taskData },
-      {
-        onSuccess: () => {
-          void utils.task.list.invalidate(queryFilter);
-        },
-      },
-    );
-  };
+  const { createTask, updateTask, deleteTask, tasks, isLoading } =
+    useTaskApi(queryFilter);
 
   const handleAddTask = () => {
     if (newTaskTitle.trim()) {
@@ -159,11 +46,7 @@ export default function TaskCollection({
         collection: collection.id,
       };
 
-      addTaskMutation.mutate(newTask, {
-        onSuccess: () => {
-          void utils.task.list.invalidate(queryFilter);
-        },
-      });
+      createTask.mutate(newTask);
       setNewTaskTitle("");
     }
   };
@@ -208,27 +91,14 @@ export default function TaskCollection({
         </div>
         <div className="space-y-2">
           <ul>
-            <li>
-              {tasks?.map((task) => (
-                <TaskItem
-                  key={task.id}
-                  task={task}
-                  onChecked={(checked) =>
-                    updateTask(task.id, { completed: checked })
-                  }
-                  onDelete={(taskId) => {
-                    deleteTaskMutation.mutate(
-                      { ids: [taskId] },
-                      {
-                        onSettled: () => {
-                          void utils.task.list.invalidate(queryFilter);
-                        },
-                      },
-                    );
-                  }}
-                />
-              ))}
-            </li>
+            {taskSorter(tasks)?.map((task) => (
+              <TaskItem
+                key={task.id}
+                task={task}
+                taskMutator={updateTask}
+                taskDeletor={deleteTask}
+              />
+            ))}
           </ul>
         </div>
       </CardContent>

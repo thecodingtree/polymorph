@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 
 import { useMediaQuery } from "usehooks-ts";
+import { cn } from "~/lib/utils";
 import { Button } from "~/app/_components/ui/button";
 import {
   Dialog,
@@ -27,16 +28,26 @@ import type { Task, TaskUpdate } from "~/tasks/types";
 
 import type { TaskMutator, TaskDeleter } from "~/tasks/hooks/useTaskApi";
 
-export function TaskDetails({
+export function TaskDetailsDialogTrigger({
+  className,
+  children,
+}: {
+  className?: string;
+  children: React.ReactNode;
+}) {
+  return <div className={className}>{children}</div>;
+}
+
+export function TaskDetailsDialog({
   task,
-  trigger,
   taskMutator,
   taskDeletor,
+  children,
 }: {
   task: Task;
-  trigger: React.ReactNode;
   taskMutator: TaskMutator;
   taskDeletor: TaskDeleter;
+  children: React.ReactNode;
 }) {
   const [open, setOpen] = useState(false);
   const [isPending, setIsPending] = useState(false);
@@ -58,8 +69,17 @@ export function TaskDetails({
   if (isDesktop) {
     return (
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogTrigger asChild>{trigger}</DialogTrigger>
-        <DialogContent className="sm:max-w-[425px]">
+        <DialogTrigger asChild>
+          <li
+            className={cn(
+              "m-2 cursor-pointer rounded-sm border border-slate-200 bg-slate-50 p-4",
+              task?.completed ? "opacity-25" : "",
+            )}
+          >
+            {children}
+          </li>
+        </DialogTrigger>
+        <DialogContent className="">
           <DialogHeader>
             <DialogTitle>Edit Task</DialogTitle>
             <DialogDescription>
@@ -72,7 +92,11 @@ export function TaskDetails({
             onSubmit={handleSubmit}
             submitting={isPending}
           />
+          <Button size={"lg"} variant="outline" onClick={() => setOpen(false)}>
+            Cancel
+          </Button>
           <Button
+            size={"lg"}
             variant="destructive"
             onClick={() =>
               taskDeletor.mutate(
@@ -83,9 +107,6 @@ export function TaskDetails({
           >
             Delete
           </Button>
-          <Button variant="outline" onClick={() => setOpen(false)}>
-            Cancel
-          </Button>
         </DialogContent>
       </Dialog>
     );
@@ -93,10 +114,19 @@ export function TaskDetails({
 
   return (
     <Drawer open={open} onOpenChange={setOpen}>
-      <DrawerTrigger asChild>{trigger}</DrawerTrigger>
+      <DrawerTrigger asChild>
+        <li
+          className={cn(
+            "m-2 cursor-pointer rounded-sm border border-slate-200 bg-slate-50 p-4",
+            task?.completed ? "opacity-25" : "",
+          )}
+        >
+          {children}
+        </li>
+      </DrawerTrigger>
       <DrawerContent>
         <DrawerHeader className="text-left">
-          <DrawerTitle>Edit profile</DrawerTitle>
+          <DrawerTitle>Edit Task</DrawerTitle>
           <DrawerDescription>
             Make changes to your profile here. Click save when you done.
           </DrawerDescription>
@@ -109,7 +139,13 @@ export function TaskDetails({
           />
         </div>
         <DrawerFooter className="pt-2">
+          <DrawerClose asChild>
+            <Button size={"lg"} variant="outline">
+              Cancel
+            </Button>
+          </DrawerClose>
           <Button
+            size={"lg"}
             variant="destructive"
             onClick={() =>
               taskDeletor.mutate(
@@ -120,9 +156,6 @@ export function TaskDetails({
           >
             Delete
           </Button>
-          <DrawerClose asChild>
-            <Button variant="outline">Cancel</Button>
-          </DrawerClose>
         </DrawerFooter>
       </DrawerContent>
     </Drawer>

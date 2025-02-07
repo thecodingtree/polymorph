@@ -199,7 +199,11 @@ export default function TaskForm({
           )}
         />
         <div className="mt-2 flex flex-col justify-center">
-          <Button type="submit" disabled={!isDirty || !isValid || submitting}>
+          <Button
+            size={"lg"}
+            type="submit"
+            disabled={!isDirty || !isValid || submitting}
+          >
             {submitLabel ?? "Save"}
           </Button>
         </div>

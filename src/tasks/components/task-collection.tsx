@@ -75,7 +75,7 @@ export default function TaskCollection({
           />
         )}
       </CardHeader>
-      <CardContent>
+      <CardContent className="max-h-96 overflow-y-scroll">
         <div className="mb-4 flex items-center">
           <Input
             type="text"

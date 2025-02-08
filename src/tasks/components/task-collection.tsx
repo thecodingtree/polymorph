@@ -20,6 +20,7 @@ import { cn } from "~/lib/utils";
 
 import { taskSorter } from "~/tasks/utils";
 import { useTaskApi } from "~/tasks/hooks/useTaskApi";
+import { useTaskCollectionApi } from "~/tasks/hooks/useTaskCollectionApi";
 
 export default function TaskCollection({
   collection,
@@ -40,6 +41,8 @@ export default function TaskCollection({
 
   const { createTask, updateTask, deleteTask, tasks, isLoading } =
     useTaskApi(queryFilter);
+
+  const { updateCollection } = useTaskCollectionApi({});
 
   const handleAddTask = () => {
     if (newTaskTitle.trim()) {
@@ -80,10 +83,10 @@ export default function TaskCollection({
               onClick={(e) => {
                 e.stopPropagation();
                 setIsPending(true);
-                updateTask.mutate(
+                updateCollection.mutate(
                   {
                     ids: [collection.id],
-                    data: { title: collectionTitle },
+                    data: { name: collectionTitle },
                   },
                   { onSettled: () => setIsPending(false) },
                 );

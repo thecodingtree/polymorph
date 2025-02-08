@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { CircleX, PlusCircle } from "lucide-react";
+import { Trash, PlusCircle, Grip, Check } from "lucide-react";
 
 import { Button } from "~/app/_components/ui/button";
 import { Input } from "~/app/_components/ui/input";
@@ -23,13 +23,16 @@ import { useTaskApi } from "~/tasks/hooks/useTaskApi";
 
 export default function TaskCollection({
   collection,
+  editing,
   onDelete,
 }: {
   collection: TaskCollection;
+  editing: boolean;
   onDelete?: (taskId: string) => void;
 }) {
   const [newTaskTitle, setNewTaskTitle] = useState("");
-  const [selected, setSelected] = useState(false);
+  const [collectionTitle, setCollectionTitle] = useState(collection.name);
+  const [isPending, setIsPending] = useState(false);
 
   const queryFilter = {
     collection: [collection.id],
@@ -52,30 +55,62 @@ export default function TaskCollection({
   };
 
   return (
-    <Card className={cn(selected && "bg-gray-100")}>
-      <CardHeader
-        className="flex h-16 cursor-pointer flex-row items-center justify-between"
-        onClick={() => setSelected(!selected)}
-      >
-        <CardTitle>{collection.name}</CardTitle>
-        {selected && (
-          <ConfirmDialog
-            title="Are you sure you want to delete this collection?"
-            description="This can not be undone"
-            onConfirm={() => onDelete?.(collection.id)}
-            trigger={
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={(e) => e.stopPropagation()}
-              >
-                <CircleX />
-              </Button>
-            }
-          />
+    <Card className={cn(editing && "bg-gray-100")}>
+      <CardHeader className="flex h-16 cursor-pointer flex-row items-center justify-between">
+        <CardTitle className="flex w-full flex-row items-center">
+          {editing ? (
+            <>
+              <Grip className="mr-2 h-6 w-6" />
+              <Input
+                className="w-full bg-white"
+                defaultValue={collectionTitle}
+                onChange={(e) => setCollectionTitle(e.target.value)}
+                disabled={isPending}
+              />
+            </>
+          ) : (
+            <span>{collectionTitle}</span>
+          )}
+        </CardTitle>
+        {editing && (
+          <div className="flex flex-row">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={(e) => {
+                e.stopPropagation();
+                setIsPending(true);
+                updateTask.mutate(
+                  {
+                    ids: [collection.id],
+                    data: { title: collectionTitle },
+                  },
+                  { onSettled: () => setIsPending(false) },
+                );
+              }}
+            >
+              <Check />
+            </Button>
+            <ConfirmDialog
+              title="Are you sure you want to delete this collection?"
+              description="This can not be undone"
+              onConfirm={() => onDelete?.(collection.id)}
+              trigger={
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <Trash />
+                </Button>
+              }
+            />
+          </div>
         )}
       </CardHeader>
-      <CardContent className="max-h-96 overflow-y-scroll">
+      <CardContent
+        className={cn(editing && "hidden", "max-h-96 overflow-y-scroll")}
+      >
         <div className="mb-4 flex items-center">
           <Input
             type="text"

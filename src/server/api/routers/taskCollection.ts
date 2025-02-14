@@ -29,6 +29,7 @@ const getTaskCollections = async ({
       tasks: tasks ? { some: { id: { in: tasks } } } : undefined,
       ownerId: user,
     },
+    orderBy: { rank: "asc" },
   })) satisfies TaskCollection[];
 };
 

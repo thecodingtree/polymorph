@@ -29,10 +29,17 @@ export interface Task {
 export type TaskFilter = z.infer<typeof TasksFilterSchema>;
 export type TaskCreate = z.infer<typeof TaskCreateSchema>;
 export type TaskUpdate = z.infer<typeof TaskUpdateSchema>;
+
+export interface TaskCollectionPresentation {
+  order: Maybe<{ prev: Maybe<string>; next: Maybe<string> }>;
+  collapsed: Maybe<boolean>;
+}
 export interface TaskCollection {
   id: string;
   name: string;
   description: Maybe<string>;
+  rank: string;
+  collapsed: boolean;
   ownerId: Maybe<string>;
   createdAt: Date;
   updatedAt: Date;

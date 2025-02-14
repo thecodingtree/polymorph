@@ -6,6 +6,8 @@ import { api } from "~/trpc/react";
 
 import type { TaskCollectionFilter, TaskCollection } from "~/tasks/types";
 
+import { sortByLexoRankAsc } from "~/lib/lexorank-sort-helper";
+
 export function useTaskCollectionApi(filter: TaskCollectionFilter) {
   const [collectionFilters, setCollectionFilters] = useState(filter);
   const utils = api.useUtils();
@@ -28,13 +30,14 @@ export function useTaskCollectionApi(filter: TaskCollectionFilter) {
           id: `pending-${Date.now()}`,
           description: null,
           ownerId: null,
+          collapsed: newCollection.collapsed ?? false,
           createdAt: new Date(),
           updatedAt: new Date(),
           ...newCollection,
         } satisfies TaskCollection;
 
         return collections
-          ? [pendingCollection, ...collections]
+          ? [...collections, pendingCollection]
           : [pendingCollection];
       });
 
@@ -67,12 +70,14 @@ export function useTaskCollectionApi(filter: TaskCollectionFilter) {
 
       // Optimistically update the task
       utils.taskCollection.list.setData(collectionFilters, (collections) => {
-        return collections?.map((collection) => {
-          if (ids.includes(collection.id)) {
-            return { ...collection, ...data };
-          }
-          return collection;
-        });
+        return collections
+          ?.map((collection) => {
+            if (ids.includes(collection.id)) {
+              return { ...collection, ...data };
+            }
+            return collection;
+          })
+          .sort(sortByLexoRankAsc);
       });
 
       return { previousCollection };

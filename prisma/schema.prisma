@@ -43,17 +43,17 @@ model Session {
 }
 
 model User {
-  id            String                @id @default(auto()) @map("_id") @db.ObjectId
-  name          String?
-  email         String?               @unique
-  emailVerified DateTime?
-  image         String?
-  accounts      Account[]
-  sessions      Session[]
-  entities      CoreEntity[]
-  blueprints    CoreEntityBlueprint[]
-  attributes    Attribute[]
-  tasks         Task[]
+  id              String                @id @default(auto()) @map("_id") @db.ObjectId
+  name            String?
+  email           String?               @unique
+  emailVerified   DateTime?
+  image           String?
+  accounts        Account[]
+  sessions        Session[]
+  entities        CoreEntity[]
+  blueprints      CoreEntityBlueprint[]
+  attributes      Attribute[]
+  tasks           Task[]
   taskCollections TaskCollection[]
 }
 
@@ -142,32 +142,34 @@ enum TaskType {
 }
 
 model Task {
-  id          String       @id @default(auto()) @map("_id") @db.ObjectId
-  type        TaskType     @default(TODO)
-  owner       User?        @relation(fields: [ownerId], references: [id], onDelete: Cascade)
-  ownerId     String?      @db.ObjectId
-  entity      CoreEntity?  @relation(fields: [entityId], references: [id], onDelete: SetNull)
-  entityId    String?      @db.ObjectId
-  collection TaskCollection? @relation(fields: [collectionId], references: [id], onDelete: SetNull)
-  collectionId String?     @db.ObjectId
-  title     String
-  description String?
-  startDate   DateTime?
-  endDate     DateTime     @default(now())
-  priority    TaskPriority @default(LOW)
-  completed   Boolean      @default(false)
-  private     Boolean      @default(false)
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
+  id           String          @id @default(auto()) @map("_id") @db.ObjectId
+  type         TaskType        @default(TODO)
+  owner        User?           @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  ownerId      String?         @db.ObjectId
+  entity       CoreEntity?     @relation(fields: [entityId], references: [id], onDelete: SetNull)
+  entityId     String?         @db.ObjectId
+  collection   TaskCollection? @relation(fields: [collectionId], references: [id], onDelete: SetNull)
+  collectionId String?         @db.ObjectId
+  title        String
+  description  String?
+  startDate    DateTime?
+  endDate      DateTime        @default(now())
+  priority     TaskPriority    @default(LOW)
+  completed    Boolean         @default(false)
+  private      Boolean         @default(false)
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
 }
 
 model TaskCollection {
-  id          String  @id @default(auto()) @map("_id") @db.ObjectId
-  owner       User?   @relation(fields: [ownerId], references: [id], onDelete: Cascade)
-  ownerId     String? @db.ObjectId
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  owner       User?    @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  ownerId     String?  @db.ObjectId
   name        String
   description String?
   tasks       Task[]
+  rank        String   @default("")
+  collapsed   Boolean  @default(false)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }

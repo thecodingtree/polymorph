@@ -55,15 +55,16 @@ export default function TaskCollectionList({
           deletor={deleteCollection}
         />
       ) : (
-        <div className="flex flex-col gap-4">
-          {collections?.map((collection) => (
-            <TaskCollection
-              key={collection.id}
-              collection={collection}
-              updator={updateCollection}
-            />
+        <ul className="flex flex-col gap-4">
+          {collections?.map((collection, index) => (
+            <li key={`col-${index}`}>
+              <TaskCollection
+                collection={collection}
+                updator={updateCollection}
+              />
+            </li>
           ))}
-        </div>
+        </ul>
       )}
     </div>
   );

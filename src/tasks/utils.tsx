@@ -1,4 +1,4 @@
-import { isAfter, isSameDay } from "date-fns";
+import { isAfter, isSameDay, isToday, isTomorrow, format } from "date-fns";
 
 import {
   TaskIconTodo,
@@ -32,25 +32,41 @@ export const getTaskIcon = (
   }
 };
 
-export const getTaskDateLabel = (
-  endDate: Maybe<Date>,
-  startDate: Maybe<Date>,
-) => {
-  if (startDate) {
-    return `${startDate.toLocaleTimeString()} - ${endDate?.toLocaleTimeString()}`;
-  } else if (!endDate) {
-    return "No due date";
+const getDayLabel = (date: Date) => {
+  if (isToday(date)) {
+    return "Today";
+  } else if (isTomorrow(date)) {
+    return "Tomorrow";
+  }
+  return format(date, "EEEE");
+};
+
+const getSingleDateLabel = (startDate: Maybe<Date>) => {
+  // Show date formatted for a Reminder task
+  return startDate ? `${format(startDate, "h:mm a, MMMM")}` : "";
+};
+
+export const getTaskDateLabel = (task: Task) => {
+  if (task.type == TaskType.REMINDER) {
+    return getSingleDateLabel(task.startDate);
   }
 
-  const now = new Date();
+  return getMultiDateLabel(task.startDate, task.endDate);
+};
 
-  switch (endDate.getDate() - now.getDate()) {
-    case 0:
-      return "Today";
-    case 1:
-      return "Tomorrow";
-    default:
-      return endDate?.toLocaleDateString();
+const getMultiDateLabel = (startDate: Maybe<Date>, endDate: Maybe<Date>) => {
+  // Show date formatted for an Event task
+  if (startDate && endDate) {
+    if (isSameDay(startDate, endDate)) {
+      return `${getDayLabel(startDate)}, ${format(startDate, "h:mm a")} - ${format(endDate, "h:mm a")}`;
+    }
+    return `${getDayLabel(startDate)}, ${format(startDate, "h:mm a")} - ${getDayLabel(endDate)}, ${format(endDate, "h:mm a")}`;
+  } else if (startDate) {
+    return `${format(startDate, "MMM d")}, ${format(startDate, "h:mm a")}`;
+  } else if (endDate) {
+    return `${format(endDate, "MMM d")}, ${format(endDate, "h:mm a")}`;
+  } else {
+    return "";
   }
 };
 

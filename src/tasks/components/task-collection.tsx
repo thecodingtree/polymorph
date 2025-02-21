@@ -28,11 +28,9 @@ import { useTaskApi } from "~/tasks/hooks/useTaskApi";
 import type { TaskCollectionMutator } from "~/tasks/hooks/useTaskCollectionApi";
 
 export default function TaskCollection({
-  key,
   collection,
   updator,
 }: {
-  key: string;
   collection: TaskCollection;
   updator: TaskCollectionMutator;
 }) {
@@ -72,7 +70,7 @@ export default function TaskCollection({
       open={!collection.collapsed}
       onOpenChange={(open) => handleOpenChange(!open)}
     >
-      <Card key={key}>
+      <Card>
         <CardHeader className="flex h-16 flex-row items-center justify-between">
           <CardTitle className="flex w-full flex-row items-center">
             <span>{collection.name}</span>

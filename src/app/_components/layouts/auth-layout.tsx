@@ -6,7 +6,7 @@ export default function AuthLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <HydrateClient>
-      <div className="flex flex-col">
+      <div className="flex flex-col bg-slate-200">
         <Navigation />
         <main className="container mx-auto min-h-screen p-4">
           <div className="min-h-4" />

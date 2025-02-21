@@ -11,12 +11,10 @@ import { Input } from "~/app/_components/ui/input";
 import type { TaskCollection } from "~/tasks/types";
 
 export function TaskCollectionEditItem({
-  key,
   collection,
   onUpdate,
   onDelete,
 }: {
-  key: string;
   collection: TaskCollection;
   onUpdate?: (collectionId: string, name: string) => void;
   onDelete?: (collectionId: string) => void;
@@ -32,7 +30,7 @@ export function TaskCollectionEditItem({
   };
 
   return (
-    <Card key={key} ref={setNodeRef} style={style} className="bg-slate-400">
+    <Card ref={setNodeRef} style={style} className="bg-slate-400">
       <CardHeader className="flex h-16 flex-row items-center justify-between">
         <CardTitle className="flex w-full flex-row items-center">
           <Grip {...attributes} {...listeners} className="mr-2 h-6 w-6" />

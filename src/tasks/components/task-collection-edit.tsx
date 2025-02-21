@@ -93,12 +93,13 @@ export default function TaskCollectionEdit({
         strategy={verticalListSortingStrategy}
       >
         {collections?.map((collection) => (
-          <TaskCollectionEditItem
-            key={collection.id}
-            collection={collection}
-            onDelete={handleDelete}
-            onUpdate={handleUpdate}
-          />
+          <div key={collection.id}>
+            <TaskCollectionEditItem
+              collection={collection}
+              onDelete={handleDelete}
+              onUpdate={handleUpdate}
+            />
+          </div>
         ))}
       </SortableContext>
     </DndContext>

@@ -1,4 +1,4 @@
-import { getTaskDateLabel } from "~/tasks/utils";
+import { getTaskDateLabel, getTaskIcon } from "~/tasks/utils";
 
 import { Checkbox } from "~/app/_components/ui/checkbox";
 
@@ -35,7 +35,7 @@ export default function TaskItem({
           isPending ? "opacity-50" : "",
         )}
       >
-        <p className="flex flex-row items-center">
+        <div className="flex flex-row items-center">
           <Checkbox
             checked={task.completed}
             onClick={(e) => {
@@ -49,6 +49,7 @@ export default function TaskItem({
             }
             disabled={isPending}
           />
+
           <span
             className={cn(
               "ml-2 flex-1 flex-nowrap text-ellipsis text-left font-bold",
@@ -57,10 +58,14 @@ export default function TaskItem({
           >
             {task?.title}
           </span>
-          <span className={cn("ml-2 text-right text-xs text-slate-500")}>
-            {getTaskDateLabel(task?.endDate, task?.startDate)}
-          </span>
-        </p>
+
+          <div className="flex flex-row items-center">
+            {getTaskIcon(task?.type, "w-4 h-4")}
+            <span className={cn("ml-2 text-right text-xs text-slate-500")}>
+              {getTaskDateLabel(task)}
+            </span>
+          </div>
+        </div>
         {(task?.description?.length ?? 0) > 0 && (
           <p className="ml-0 max-w-full truncate text-xs text-slate-500">
             {task?.description}

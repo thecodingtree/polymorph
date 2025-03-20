@@ -1,4 +1,5 @@
 import type { PrismaClient } from "@prisma/client";
+import { de } from "date-fns/locale";
 
 import { z } from "zod";
 
@@ -20,7 +21,7 @@ const getTasks = async ({
   input: TaskFilter;
   user: string;
 }): Promise<Task[]> => {
-  const { type, collection, completed, startDate, endDate, entity } = input;
+  const { type, collection, completed, due, entity } = input;
 
   const filters = [];
 
@@ -32,16 +33,26 @@ const getTasks = async ({
     filters.push({ collectionId: { in: collection } });
   }
 
-  if (completed) {
+  if (completed !== undefined) {
     filters.push({ completed });
   }
 
-  if (startDate) {
-    filters.push({ startDate: { lte: startDate } });
+  if (due?.on) {
+    const startOfDay = new Date(due.on);
+    startOfDay.setHours(0, 0, 0, 0);
+
+    const endOfDay = new Date(due.on);
+    endOfDay.setHours(23, 59, 59, 999);
+
+    filters.push({ endDate: { gte: startOfDay, lt: endOfDay } });
   }
 
-  if (endDate) {
-    filters.push({ endDate: { gte: endDate } });
+  if (due?.after) {
+    filters.push({ endDate: { gte: due.after } });
+  }
+
+  if (due?.before) {
+    filters.push({ endDate: { lt: due.before } });
   }
 
   if (entity) {

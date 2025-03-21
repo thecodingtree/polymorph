@@ -1,3 +1,5 @@
+"use client";
+
 import { isBefore, isToday, isThisYear, format } from "date-fns";
 import { CheckCircle2, Circle } from "lucide-react";
 import { cn } from "~/lib/utils";
@@ -7,13 +9,9 @@ import { Button } from "~/app/_components/ui/button";
 
 import { type Task, TaskPriority } from "~/tasks/types";
 
-export default function Task({
-  task,
-  onCompleteTask,
-}: {
-  task: Task;
-  onCompleteTask?: (id: string) => void;
-}) {
+import { completeTask } from "~/tasks/actions";
+
+export default function Task({ task }: { task: Task }) {
   const isDueToday = task?.endDate && isToday(task?.endDate);
   const isOverdue =
     task?.endDate && !isDueToday && isBefore(task?.endDate, new Date());
@@ -42,7 +40,7 @@ export default function Task({
               variant="ghost"
               size="icon"
               className="m-0 h-5 w-5 cursor-pointer rounded-xl p-0"
-              onClick={() => onCompleteTask?.(task?.id)}
+              onClick={() => completeTask(task.id)}
               asChild
             >
               <Circle className="text-muted-foreground" />

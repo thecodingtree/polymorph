@@ -1,32 +1,15 @@
-"use client";
-import React from "react";
+import React, { Suspense } from "react";
 
 import { format, addMonths, endOfToday, startOfTomorrow } from "date-fns";
 import { CalendarDays } from "lucide-react";
 
-import { useTaskApi } from "~/tasks/hooks/useTaskApi";
-
-import Task from "~/landing/task";
 import TaskSkeleton from "~/landing/task-skeleton";
+import TasksContainer from "~/landing/task-container";
 
-export default function Landing() {
+export default async function Landing() {
   // Get today's date
   const today = new Date();
   const formattedDate = format(today, "EEEE, MMMM d, yyyy");
-
-  const {
-    tasks: todaysTasks,
-    updateTask,
-    isLoading: isTodayLoading,
-  } = useTaskApi({
-    due: { before: endOfToday() },
-    completed: false,
-  });
-
-  const { tasks: upcomingTasks, isLoading: isUpcomingLoading } = useTaskApi({
-    due: { after: startOfTomorrow(), before: addMonths(today, 1) },
-    completed: false,
-  });
 
   return (
     <div className="bg-white">
@@ -52,73 +35,32 @@ export default function Landing() {
 
           <h2 className="mb-4 text-xl font-semibold">Today&apos;s Tasks</h2>
 
-          {!isTodayLoading ? (
-            <div className="grid gap-4">
-              {todaysTasks?.length === 0 ? (
-                <p className="text-muted-foreground">
-                  No tasks for today. Enjoy your day!
-                </p>
-              ) : (
-                todaysTasks?.map((task) => (
-                  <Task
-                    key={task.id}
-                    task={task}
-                    onCompleteTask={(id) =>
-                      updateTask.mutate({
-                        ids: [id],
-                        data: { completed: true },
-                      })
-                    }
-                  />
-                ))
-              )}
-            </div>
-          ) : (
-            <div className="grid gap-4">
-              <TasksLoading num={2} />
-            </div>
-          )}
+          <Suspense fallback={<TaskSkeleton />}>
+            <TasksContainer
+              filter={{
+                due: { before: endOfToday() },
+                completed: false,
+              }}
+              emptyMsg="No tasks due today. Go ahead and relax!"
+            />
+          </Suspense>
         </div>
       </section>
       {/* Lower section - Upcoming tasks */}
       <section>
         <div className="container px-4 py-8 md:px-6">
           <h2 className="mb-4 text-xl font-semibold">Upcoming Tasks</h2>
-
-          {!isUpcomingLoading ? (
-            <div className="grid gap-4">
-              {upcomingTasks?.length === 0 ? (
-                <p className="text-muted-foreground">
-                  No upcoming tasks scheduled.
-                </p>
-              ) : (
-                upcomingTasks?.map((task) => (
-                  <Task
-                    key={task.id}
-                    task={task}
-                    onCompleteTask={(id) =>
-                      updateTask.mutate({
-                        ids: [id],
-                        data: { completed: true },
-                      })
-                    }
-                  />
-                ))
-              )}
-            </div>
-          ) : (
-            <div className="grid gap-4">
-              <TasksLoading num={3} />
-            </div>
-          )}
+          <Suspense fallback={<TaskSkeleton />}>
+            <TasksContainer
+              filter={{
+                due: { after: startOfTomorrow(), before: addMonths(today, 1) },
+                completed: false,
+              }}
+              emptyMsg="No upcoming tasks. You are all caught up!"
+            />
+          </Suspense>
         </div>
       </section>
     </div>
   );
-}
-
-function TasksLoading({ num }: { num: number }) {
-  const tasks = Array.from({ length: num }, (_, i) => <TaskSkeleton key={i} />);
-
-  return <>{tasks}</>;
 }

@@ -1,5 +1,4 @@
 import type { PrismaClient } from "@prisma/client";
-import { de } from "date-fns/locale";
 
 import { z } from "zod";
 

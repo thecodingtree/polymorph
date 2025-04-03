@@ -18,8 +18,8 @@ export default function TaskItem({
   taskDeletor,
 }: {
   task: Task;
-  taskMutator: TaskMutator;
-  taskDeletor: TaskDeleter;
+  taskMutator?: TaskMutator;
+  taskDeletor?: TaskDeleter;
 }) {
   const isPending = task.id.includes("pending");
 
@@ -42,7 +42,7 @@ export default function TaskItem({
               e.stopPropagation();
             }}
             onCheckedChange={(checked) =>
-              taskMutator.mutate({
+              taskMutator?.mutate({
                 ids: [task.id],
                 data: { completed: checked === true },
               })

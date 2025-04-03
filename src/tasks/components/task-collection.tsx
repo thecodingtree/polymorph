@@ -17,13 +17,15 @@ import {
   CollapsibleTrigger,
   CollapsibleContent,
 } from "~/app/_components/ui/collapsible";
+import { Skeleton } from "~/app/_components/ui/skeleton";
 
 import { type TaskCollection, TaskType } from "~/tasks/types";
+
+import { useTaskApi } from "~/tasks/hooks/useTaskApi";
 
 import TaskItem from "~/tasks/components/task-item";
 
 import { taskSorter } from "~/tasks/utils";
-import { useTaskApi } from "~/tasks/hooks/useTaskApi";
 
 import type { TaskCollectionMutator } from "~/tasks/hooks/useTaskCollectionApi";
 
@@ -101,14 +103,18 @@ export default function TaskCollection({
               </Button>
             </div>
             <ul>
-              {taskSorter(tasks)?.map((task) => (
-                <TaskItem
-                  key={task.id}
-                  task={task}
-                  taskMutator={updateTask}
-                  taskDeletor={deleteTask}
-                />
-              ))}
+              {!isLoading ? (
+                taskSorter(tasks)?.map((task) => (
+                  <TaskItem
+                    key={task.id}
+                    task={task}
+                    taskMutator={updateTask}
+                    taskDeletor={deleteTask}
+                  />
+                ))
+              ) : (
+                <TasksSkeleton />
+              )}
             </ul>
           </CollapsibleContent>
         </CardContent>
@@ -116,3 +122,19 @@ export default function TaskCollection({
     </Collapsible>
   );
 }
+
+const TasksSkeleton = () => {
+  return (
+    <div className="border-1 m-2 flex cursor-pointer flex-row items-center justify-between rounded-sm border border-slate-200 p-4">
+      <div className="flex flex-row items-center">
+        <Skeleton className="h-4 w-4" />
+
+        <Skeleton className="ml-2 h-4 w-28" />
+      </div>
+
+      <div className="flex flex-row items-center">
+        <Skeleton className="ml-2 h-4 w-28" />
+      </div>
+    </div>
+  );
+};

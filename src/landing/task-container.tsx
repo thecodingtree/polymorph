@@ -2,6 +2,10 @@
 
 import { api } from "~/trpc/server";
 
+import { db } from "~/server/db";
+
+import { getTasks } from "~/tasks/data";
+
 import type { TaskFilter } from "~/tasks/types";
 
 import Task from "~/landing/task";
@@ -13,7 +17,7 @@ export default async function TasksContainer({
   filter: TaskFilter;
   emptyMsg?: string;
 }) {
-  const tasks = await api.task.list(filter);
+  const tasks = await getTasks({ prisma: db, input: filter });
 
   return (
     <div className="grid gap-4">

@@ -1,5 +1,3 @@
-import type { PrismaClient } from "@prisma/client";
-
 import { z } from "zod";
 
 import { protectedProcedure, createTRPCRouter } from "~/server/api/trpc";
@@ -9,29 +7,10 @@ import {
   TaskCollectionCreateSchema,
   TaskCollectionUpdateSchema,
 } from "~/tasks/schemas";
-import type { TaskCollectionFilter, TaskCollection } from "~/tasks/types";
+import type { TaskCollection } from "~/tasks/types";
 import type { Maybe } from "~/types";
 
-const getTaskCollections = async ({
-  prisma,
-  input,
-  user,
-}: {
-  prisma: PrismaClient;
-  input: TaskCollectionFilter;
-  user: string;
-}): Promise<TaskCollection[]> => {
-  const { name, tasks } = input;
-
-  return (await prisma.taskCollection.findMany({
-    where: {
-      name: name ? { contains: name } : undefined,
-      tasks: tasks ? { some: { id: { in: tasks } } } : undefined,
-      ownerId: user,
-    },
-    orderBy: { rank: "asc" },
-  })) satisfies TaskCollection[];
-};
+import { getTaskCollections } from "~/task-collection/data";
 
 export const taskCollectionRouter = createTRPCRouter({
   get: protectedProcedure

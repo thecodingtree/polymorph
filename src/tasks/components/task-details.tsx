@@ -49,8 +49,8 @@ export function TaskDetailsDialog({
   children,
 }: {
   task: Maybe<Task>;
-  taskMutator: TaskMutator;
-  taskDeletor: TaskDeleter;
+  taskMutator?: TaskMutator;
+  taskDeletor?: TaskDeleter;
   defaultOpen?: boolean;
   onOpenChange?: (open: boolean) => void;
   children?: React.ReactNode;
@@ -62,7 +62,7 @@ export function TaskDetailsDialog({
   const handleSubmit = (id: string, taskUpdate: TaskUpdate) => {
     console.log("taskUpdate", taskUpdate);
     setIsPending(true);
-    taskMutator.mutate(
+    taskMutator?.mutate(
       { ids: [id], data: taskUpdate },
       {
         onSettled: () => {
@@ -122,7 +122,7 @@ export function TaskDetailsDialog({
                 variant="destructive"
                 onClick={() => {
                   if (!task) return;
-                  taskDeletor.mutate(
+                  taskDeletor?.mutate(
                     { ids: [task.id] },
                     { onSettled: () => setOpen(false) },
                   );
@@ -181,7 +181,7 @@ export function TaskDetailsDialog({
             variant="destructive"
             onClick={() => {
               if (!task) return;
-              taskDeletor.mutate(
+              taskDeletor?.mutate(
                 { ids: [task?.id] },
                 { onSettled: () => setOpen(false) },
               );

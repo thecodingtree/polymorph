@@ -6,19 +6,24 @@ import { LexoRank } from "lexorank";
 
 import { useTaskCollectionApi } from "~/tasks/hooks/useTaskCollectionApi";
 
-import type { TaskCollectionFilter } from "~/tasks/types";
+import type {
+  TaskCollectionFilter,
+  TaskCollection as TaskCollectionType,
+} from "~/tasks/types";
 
 import TaskCollection from "~/tasks/components/task-collection";
 import TaskCollectionActions from "~/tasks/components/task-collection-actions";
 import TaskCollectionEdit from "./task-collection-edit";
 
 export default function TaskCollectionList({
+  collections,
   filter,
 }: {
+  collections: TaskCollectionType[];
   filter: TaskCollectionFilter;
 }) {
   const [isEditing, setIsEditing] = useState(false);
-  const { collections, updateCollection, createCollection, deleteCollection } =
+  const { updateCollection, createCollection, deleteCollection } =
     useTaskCollectionApi(filter);
 
   const handleAddCollection = (name: string) => {

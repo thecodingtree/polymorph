@@ -1,46 +1,76 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { useState } from "react";
 
-import { api } from "~/trpc/react";
+import { LexoRank } from "lexorank";
 
-import { toast } from "sonner";
+import { useTaskCollectionApi } from "~/tasks/hooks/useTaskCollectionApi";
 
-import type { TaskCollection as TaskCollectionType } from "~/tasks/types";
+import type {
+  TaskCollectionFilter,
+  TaskCollection as TaskCollectionType,
+} from "~/tasks/types";
 
 import TaskCollection from "~/tasks/components/task-collection";
+import TaskCollectionActions from "~/tasks/components/task-collection-actions";
+import TaskCollectionEdit from "./task-collection-edit";
 
 export default function TaskCollectionList({
   collections,
+  filter,
 }: {
   collections: TaskCollectionType[];
+  filter: TaskCollectionFilter;
 }) {
-  const router = useRouter();
+  const [isEditing, setIsEditing] = useState(false);
+  const { updateCollection, createCollection, deleteCollection } =
+    useTaskCollectionApi(filter);
 
-  const deleteCollectionMutation = api.taskCollection.delete.useMutation({
-    onError(err) {
-      console.log("Error deleting collection", err);
+  const handleAddCollection = (name: string) => {
+    const lastCollection = collections?.[collections.length - 1];
 
-      toast.error("Error deleting collection");
-    },
-    onSettled() {
-      router.refresh();
-    },
-  });
-
-  const handleDelete = (id: string) => {
-    deleteCollectionMutation.mutate({ ids: [id] });
+    if (!lastCollection) {
+      const rank = LexoRank.middle();
+      createCollection.mutate({
+        name,
+        rank: rank.toString(),
+        collapsed: false,
+      });
+    } else {
+      const newRank = LexoRank.parse(lastCollection.rank).genNext();
+      createCollection.mutate({
+        name,
+        rank: newRank.toString(),
+        collapsed: false,
+      });
+    }
   };
 
   return (
-    <>
-      {collections?.map((collection) => (
-        <TaskCollection
-          key={collection.id}
-          collection={collection}
-          onDelete={handleDelete}
+    <div className="flex flex-col gap-4">
+      <TaskCollectionActions
+        isEditing={isEditing}
+        onEditChange={(edit) => setIsEditing(edit)}
+        onAddCollection={handleAddCollection}
+      />
+      {isEditing ? (
+        <TaskCollectionEdit
+          collections={collections ?? []}
+          updator={updateCollection}
+          deletor={deleteCollection}
         />
-      ))}
-    </>
+      ) : (
+        <ul className="flex flex-col gap-4">
+          {collections?.map((collection, index) => (
+            <li key={`col-${index}`}>
+              <TaskCollection
+                collection={collection}
+                updator={updateCollection}
+              />
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
   );
 }

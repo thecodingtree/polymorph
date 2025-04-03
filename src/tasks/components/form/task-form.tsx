@@ -31,10 +31,7 @@ import {
 import type { Task, TaskUpdate } from "~/tasks/types";
 import { TaskPriority, TaskType } from "~/tasks/types";
 import { Textarea } from "~/app/_components/ui/textarea";
-import { Input } from "~/app/_components/ui/input";
 import DateTimePicker from "~/app/_components/controls/DateTime/DateTimePicker";
-
-import { getDateRounded } from "~/app/_components/controls/DateTime/utils";
 
 export default function TaskForm({
   task,
@@ -45,7 +42,6 @@ export default function TaskForm({
   task: Task;
   submitLabel?: string;
   onSubmit: (values: TaskUpdate) => void;
-  dateType?: "dueDate" | "startDate";
   submitting?: boolean;
 }) {
   const dateType = task?.type === TaskType.EVENT ? "startDate" : "dueDate";
@@ -55,21 +51,12 @@ export default function TaskForm({
     defaultValues: {
       type: task.type,
       description: task.description ?? "",
-      title: task.title ?? "",
       priority: task.priority,
       private: task.private,
       completed: task.completed,
       startDate:
-        dateType === "startDate"
-          ? getDateRounded(task.startDate ?? new Date())
-          : undefined,
-      endDate: task.endDate
-        ? getDateRounded(task.endDate)
-        : getDateRounded(
-            dateType === "dueDate"
-              ? new Date()
-              : new Date(new Date().getHours() + 1),
-          ),
+        dateType === "startDate" ? (task.startDate ?? new Date()) : undefined,
+      endDate: task.endDate ? task.endDate : undefined,
     },
   });
 
@@ -80,25 +67,12 @@ export default function TaskForm({
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
         <FormField
           control={form.control}
-          name="title"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Title</FormLabel>
-              <FormControl>
-                <Input placeholder="" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
           name="description"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Description</FormLabel>
               <FormControl>
-                <Textarea placeholder="" {...field} />
+                <Textarea className="min-h-48" placeholder="" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -199,7 +173,11 @@ export default function TaskForm({
           )}
         />
         <div className="mt-2 flex flex-col justify-center">
-          <Button type="submit" disabled={!isDirty || !isValid || submitting}>
+          <Button
+            size={"lg"}
+            type="submit"
+            disabled={!isDirty || !isValid || submitting}
+          >
             {submitLabel ?? "Save"}
           </Button>
         </div>
